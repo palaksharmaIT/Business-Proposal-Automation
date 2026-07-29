@@ -7,6 +7,7 @@ from .serializers import ProposalSerializer
 from .services.proposal_generator import generate_proposal_content
 from rfp.models import RFP
 from knowledge_base.models import HistoricalProject
+from .services.estimator import estimate_cost_and_timeline
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
@@ -64,4 +65,38 @@ def generate_proposal(request):
             "proposal": ProposalSerializer(proposal).data,
         },
         status=status.HTTP_201_CREATED,
+    )
+
+@api_view(['POST'])
+def estimate_proposal(request, pk):
+    """
+    POST /api/proposals/proposals/{id}/estimate/
+    Computes cost & timeline for an existing proposal using its linked RFP's requirements.
+    """
+    try:
+        proposal = Proposal.objects.get(id=pk)
+    except Proposal.DoesNotExist:
+        return Response({"error": "Proposal not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    rfp_requirements = proposal.rfp.extracted_requirements
+    if not rfp_requirements:
+        return Response({"error": "Linked RFP has no extracted requirements."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        estimation = estimate_cost_and_timeline(rfp_requirements)
+    except Exception as e:
+        return Response({"error": f"Estimation failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    proposal.estimated_cost = estimation["estimated_cost"]
+    proposal.cost_breakdown = estimation["cost_breakdown"]
+    proposal.estimated_timeline_weeks = estimation["estimated_timeline_weeks"]
+    proposal.timeline_breakdown = estimation["timeline_breakdown"]
+    proposal.save()
+
+    return Response(
+        {
+            "message": "Cost and timeline estimated successfully.",
+            "proposal": ProposalSerializer(proposal).data,
+        },
+        status=status.HTTP_200_OK,
     )

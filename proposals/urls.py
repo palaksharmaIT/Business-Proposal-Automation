@@ -1,10 +1,11 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path
-from .views import ProposalViewSet, generate_proposal
+from .views import ProposalViewSet, generate_proposal, estimate_proposal
 
 router = DefaultRouter()
 router.register(r'proposals', ProposalViewSet, basename='proposal')
 
 urlpatterns = [
     path('generate/', generate_proposal, name='generate-proposal'),
+    path('proposals/<int:pk>/estimate/', estimate_proposal, name='estimate-proposal'),
 ] + router.urls
