@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Proposal Assistant — Dashboard</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        color: #2c3e50;
+    }
+    header {
+        background: #2c3e50;
+        color: white;
+        padding: 18px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    header h1 { font-size: 20px; margin: 0; }
+    .container {
+        max-width: 1150px;
+        margin: 25px auto;
+        padding: 0 20px;
+    }
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .tab-btn {
+        padding: 10px 18px;
+        border: none;
+        background: #dfe6e9;
+        color: #2c3e50;
+        border-radius: 6px 6px 0 0;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .tab-btn.active {
+        background: white;
+        font-weight: bold;
+        box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+    }
+    .panel {
+        background: white;
+        border-radius: 0 8px 8px 8px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        display: none;
+    }
+    .panel.active { display: block; }
+    .upload-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .toolbar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    input[type="text"], input[type="file"], input[type="email"], select {
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 13px;
+    }
+    .search-input { min-width: 220px; }
+    button.action-btn {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    button.action-btn:hover { background: #34495e; }
+    button.action-btn:disabled { background: #b2bec3; cursor: not-allowed; }
+    button.delete-btn {
+        background: #e74c3c;
+    }
+    button.delete-btn:hover { background: #c0392b; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+    th, td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    th { background: #f8f9fa; color: #555; }
+    .status-badge {
+        padding: 3px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+        white-space: nowrap;
+    }
+    .status-uploaded { background: #95a5a6; }
+    .status-extracted { background: #3498db; }
+    .status-analyzed { background: #9b59b6; }
+    .status-failed { background: #e74c3c; }
+    .status-draft { background: #95a5a6; }
+    .status-generated { background: #2980b9; }
+    .status-sent_for_review { background: #f39c12; }
+    .status-approved { background: #27ae60; }
+    .status-rejected { background: #e74c3c; }
+    .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+    .actions-cell button { font-size: 11px; padding: 5px 8px; }
+    .loading { color: #888; font-style: italic; font-size: 13px; }
+    .msg-box {
+        margin-top: 12px;
+        padding: 10px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+    }
+    .msg-box.show { display: flex; }
+    .msg-success { background: #eafaf1; color: #27ae60; border: 1px solid #27ae60; }
+    .msg-error { background: #fdedec; color: #e74c3c; border: 1px solid #e74c3c; }
+    .msg-loading { background: #eef4fb; color: #2980b9; border: 1px solid #2980b9; }
+    a.pdf-link { color: #2980b9; text-decoration: none; font-size: 12px; }
+ 
+    /* Spinner */
+    .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(0,0,0,0.15);
+        border-top-color: currentColor;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .btn-spinner {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+    .empty-row td {
+        text-align: center;
+        color: #999;
+        padding: 24px;
+        font-style: italic;
+    }
+</style>
+</head>
+<body>
+ 
+{% csrf_token %}
+ 
+<header>
+    <h1>🧠 AI Business Proposal Assistant</h1>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <span style="font-size:13px; opacity:0.8;">👤 {{ request.user.username }}</span>
+        <a href="/logout/" style="color:white; font-size:13px; text-decoration:underline;">Logout</a>
+    </div>
+</header>
+ 
+<div class="container">
+ 
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('rfps')">📄 RFPs</button>
+        <button class="tab-btn" onclick="switchTab('proposals')">📋 Proposals</button>
+    </div>
+ 
+    <!-- RFPs Panel -->
+    <div id="rfps" class="panel active">
+        <h2>Upload New RFP</h2>
+        <form id="uploadForm" class="upload-box">
+            <input type="text" id="rfpTitle" placeholder="RFP Title" required>
+            <input type="file" id="rfpFile" accept=".pdf,.docx,.txt" required>
+            <button type="submit" class="action-btn" id="uploadBtn">Upload</button>
+        </form>
+        <div id="uploadMsg" class="msg-box"></div>
+ 
+        <h2 style="margin-top:30px;">All RFPs</h2>
+        <div class="toolbar">
+            <input type="text" id="rfpSearch" class="search-input" placeholder="🔍 Search by title...">
+            <select id="rfpStatusFilter">
+                <option value="">All Statuses</option>
+                <option value="uploaded">Uploaded</option>
+                <option value="extracted">Extracted</option>
+                <option value="analyzed">Analyzed</option>
+                <option value="failed">Failed</option>
+            </select>
+        </div>
+        <table id="rfpTable">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Title</th><th>Status</th><th>Uploaded</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="rfpTableBody">
+                <tr><td colspan="5" class="loading">Loading RFPs...</td></tr>
+            </tbody>
+        </table>
+    </div>
+ 
+    <!-- Proposals Panel -->
+    <div id="proposals" class="panel">
+        <h2>All Proposals</h2>
+        <div class="toolbar">
+            <input type="text" id="proposalSearch" class="search-input" placeholder="🔍 Search by title...">
+            <select id="proposalStatusFilter">
+                <option value="">All Statuses</option>
+                <option value="draft">Draft</option>
+                <option value="generated">Generated</option>
+                <option value="sent_for_review">Sent for Review</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+        <table id="proposalTable">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Title</th><th>Cost</th><th>Timeline</th><th>Status</th><th>PDF</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="proposalTableBody">
+                <tr><td colspan="7" class="loading">Loading proposals...</td></tr>
+            </tbody>
+        </table>
+    </div>
+ 
+</div>
+ 
+<script>
+// ---------------- CSRF helper ----------------
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const CSRF_TOKEN = getCookie('csrftoken');
+ 
+const API = {
+    rfps: '/api/rfp/rfps/',
+    rfpDetail: id => `/api/rfp/rfps/${id}/`,
+    analyze: id => `/api/rfp/rfps/${id}/analyze/`,
+    generate: '/api/proposals/generate/',
+    proposals: '/api/proposals/proposals/',
+    proposalDetail: id => `/api/proposals/proposals/${id}/`,
+    estimate: id => `/api/proposals/proposals/${id}/estimate/`,
+    exportPdf: id => `/api/proposals/proposals/${id}/export-pdf/`,
+    sendReview: id => `/api/proposals/proposals/${id}/send-for-review/`,
+    sendToClient: id => `/api/proposals/proposals/${id}/send-to-client/`,
+};
+ 
+let allRfps = [];
+let allProposals = [];
+ 
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+    if (tab === 'proposals') loadProposals();
+}
+ 
+function showMsg(elId, text, type) {
+    const el = document.getElementById(elId);
+    el.innerHTML = type === 'loading' ? `<span class="spinner"></span> ${text}` : text;
+    el.className = `msg-box show msg-${type}`;
+    if (type !== 'loading') {
+        setTimeout(() => el.classList.remove('show'), 6000);
+    }
+}
+ 
+function hideMsg(elId) {
+    document.getElementById(elId).classList.remove('show');
+}
+ 
+function statusBadge(status) {
+    return `<span class="status-badge status-${status}">${status.replace(/_/g, ' ')}</span>`;
+}
+ 
+function setButtonLoading(btn, loadingText) {
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
+    btn.disabled = true;
+}
+ 
+// ---------------- RFPs ----------------
+async function loadRfps() {
+    const res = await fetch(API.rfps);
+    const data = await res.json();
+    allRfps = data.results || data;
+    renderRfps();
+}
+ 
+function renderRfps() {
+    const searchTerm = document.getElementById('rfpSearch').value.toLowerCase();
+    const statusFilter = document.getElementById('rfpStatusFilter').value;
+ 
+    let filtered = allRfps.filter(rfp => {
+        const matchesSearch = (rfp.title || '').toLowerCase().includes(searchTerm);
+        const matchesStatus = !statusFilter || rfp.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
+ 
+    const rows = filtered.map(rfp => `
+        <tr>
+            <td>${rfp.id}</td>
+            <td>${rfp.title || '-'}</td>
+            <td>${statusBadge(rfp.status)}</td>
+            <td>${new Date(rfp.uploaded_at).toLocaleString()}</td>
+            <td class="actions-cell">
+                ${rfp.status === 'extracted' || rfp.status === 'analyzed'
+                    ? `<button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Analyze</button>` : ''}
+                ${rfp.status === 'analyzed'
+                    ? `<button class="action-btn" onclick="generateProposal(${rfp.id}, this)">Generate Proposal</button>` : ''}
+                <button class="action-btn delete-btn" onclick="deleteRfp(${rfp.id}, this)">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+    document.getElementById('rfpTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="5">No RFPs match your search/filter.</td></tr>';
+}
+ 
+document.getElementById('rfpSearch').addEventListener('input', renderRfps);
+document.getElementById('rfpStatusFilter').addEventListener('change', renderRfps);
+ 
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('rfpTitle').value;
+    const file = document.getElementById('rfpFile').files[0];
+    const uploadBtn = document.getElementById('uploadBtn');
+ 
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('file', file);
+ 
+    setButtonLoading(uploadBtn, 'Uploading...');
+    showMsg('uploadMsg', 'Uploading and extracting text from file...', 'loading');
+ 
+    try {
+        const res = await fetch(API.rfps, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': CSRF_TOKEN },
+            body: formData
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showMsg('uploadMsg', data.message, 'success');
+            document.getElementById('uploadForm').reset();
+            loadRfps();
+        } else {
+            showMsg('uploadMsg', data.error || 'Upload failed.', 'error');
+        }
+    } catch (err) {
+        showMsg('uploadMsg', 'Network error: ' + err.message, 'error');
+    } finally {
+        uploadBtn.innerHTML = uploadBtn.dataset.originalText;
+        uploadBtn.disabled = false;
+    }
+});
+ 
+async function analyzeRfp(id, btn) {
+    setButtonLoading(btn, 'Analyzing...');
+    showMsg('uploadMsg', 'Analyzing RFP with AI...', 'loading');
+    try {
+        const res = await fetch(API.analyze(id), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showMsg('uploadMsg', 'RFP analyzed successfully.', 'success');
+        } else {
+            showMsg('uploadMsg', data.error || 'Analysis failed.', 'error');
+        }
+    } finally {
+        loadRfps();
+    }
+}
+ 
+async function generateProposal(rfpId, btn) {
+    setButtonLoading(btn, 'Generating...');
+    showMsg('uploadMsg', 'Generating proposal... this may take 10-20 seconds.', 'loading');
+    try {
+        const res = await fetch(API.generate, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: JSON.stringify({ rfp_id: rfpId }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showMsg('uploadMsg', 'Proposal generated! Check the Proposals tab.', 'success');
+        } else {
+            showMsg('uploadMsg', data.error || 'Proposal generation failed.', 'error');
+        }
+    } finally {
+        loadRfps();
+    }
+}
+ 
+async function deleteRfp(id, btn) {
+    if (!confirm('Delete this RFP? This cannot be undone.')) return;
+    setButtonLoading(btn, 'Deleting...');
+    try {
+        const res = await fetch(API.rfpDetail(id), {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        if (res.ok || res.status === 204) {
+            showMsg('uploadMsg', 'RFP deleted.', 'success');
+        } else {
+            showMsg('uploadMsg', 'Delete failed.', 'error');
+        }
+    } finally {
+        loadRfps();
+    }
+}
+ 
+// ---------------- Proposals ----------------
+async function loadProposals() {
+    const res = await fetch(API.proposals);
+    const data = await res.json();
+    allProposals = data.results || data;
+    renderProposals();
+}
+ 
+function renderProposals() {
+    const searchTerm = document.getElementById('proposalSearch').value.toLowerCase();
+    const statusFilter = document.getElementById('proposalStatusFilter').value;
+
+ 
+    let filtered = allProposals.filter(p => {
+        const matchesSearch = (p.title || '').toLowerCase().includes(searchTerm);
+        const matchesStatus = !statusFilter || p.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
+ 
+    const rows = filtered.map(p => `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.title || '-'}</td>
+            <td>${p.estimated_cost ? '$' + p.estimated_cost : '-'}</td>
+            <td>${p.estimated_timeline_weeks ? p.estimated_timeline_weeks + ' wks' : '-'}</td>
+            <td>${statusBadge(p.status)}</td>
+            <td>${p.generated_pdf ? `<a class="pdf-link" href="${p.generated_pdf}" target="_blank">View PDF</a>` : '-'}</td>
+            <td class="actions-cell">
+                ${p.generated_pdf && p.status !== 'sent_for_review' ? `<button class="action-btn" onclick="sendReview(${p.id}, this)">Send for Review</button>` : ''}
+                ${p.generated_pdf ? `<button class="action-btn" style="background:#27ae60;" onclick="sendToClient(${p.id}, this)">Send to Client</button>` : ''}
+                <button class="action-btn delete-btn" onclick="deleteProposal(${p.id}, this)">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+    document.getElementById('proposalTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="7">No proposals match your search/filter.</td></tr>';
+}
+ 
+document.getElementById('proposalSearch').addEventListener('input', renderProposals);
+document.getElementById('proposalStatusFilter').addEventListener('change', renderProposals);
+ 
+async function estimateProposal(id, btn) {
+    setButtonLoading(btn, 'Estimating...');
+    try {
+        const res = await fetch(API.estimate(id), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        const data = await res.json();
+        if (!res.ok) alert(data.error || 'Estimation failed.');
+    } finally {
+        loadProposals();
+    }
+}
+ 
+async function exportPdf(id, btn) {
+    setButtonLoading(btn, 'Exporting...');
+    try {
+        const res = await fetch(API.exportPdf(id), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        const data = await res.json();
+        if (!res.ok) alert(data.error || 'PDF export failed.');
+    } finally {
+        loadProposals();
+    }
+}
+ 
+async function sendReview(id, btn) {
+    setButtonLoading(btn, 'Sending...');
+    try {
+        const res = await fetch(API.sendReview(id), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        const data = await res.json();
+        if (res.ok) {
+            alert(data.message);
+        } else {
+            alert(data.error || 'Send failed.');
+        }
+    } finally {
+        loadProposals();
+    }
+}
+ 
+async function deleteProposal(id, btn) {
+    if (!confirm('Delete this proposal? This cannot be undone.')) return;
+    setButtonLoading(btn, 'Deleting...');
+    try {
+        const res = await fetch(API.proposalDetail(id), {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        if (!(res.ok || res.status === 204)) {
+            alert('Delete failed.');
+        }
+    } finally {
+        loadProposals();
+    }
+}
+
+async function sendToClient(id, btn) {
+    const clientEmail = prompt("Enter client's email address:");
+    if (!clientEmail) return;
+
+    setButtonLoading(btn, 'Sending...');
+    try {
+        const res = await fetch(API.sendToClient(id), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: JSON.stringify({ client_email: clientEmail }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            alert(data.message);
+        } else {
+            alert(data.error || 'Send failed.');
+        }
+    } finally {
+        loadProposals();
+    }
+}
+ 
+// Init
+loadRfps();
+</script>
+ 
+</body>
+</html>
+ 

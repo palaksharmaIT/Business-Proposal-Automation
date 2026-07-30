@@ -47,6 +47,7 @@ def _clean_json_output(raw_output: str) -> str:
         raw_output = raw_output.strip("`")
         if raw_output.lower().startswith("json"):
             raw_output = raw_output[4:].strip()
+            
     return raw_output
 
 

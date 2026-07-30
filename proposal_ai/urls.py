@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/rfp/', include('rfp.urls')),
     path('api/kb/', include('knowledge_base.urls')),
     path('api/proposals/', include('proposals.urls')),
+    path('', include('dashboard.urls')),
 ]
 
 if settings.DEBUG:

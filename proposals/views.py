@@ -5,9 +5,12 @@ from rest_framework.response import Response
 from .models import Proposal
 from .serializers import ProposalSerializer
 from .services.proposal_generator import generate_proposal_content
+from .services.estimator import estimate_cost_and_timeline
 from rfp.models import RFP
 from knowledge_base.models import HistoricalProject
-from .services.estimator import estimate_cost_and_timeline
+from exporter.models import ProposalDelivery
+from exporter.services.pdf_generator import generate_proposal_pdf
+from exporter.services.email_service import send_proposal_for_review
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
@@ -67,6 +70,7 @@ def generate_proposal(request):
         status=status.HTTP_201_CREATED,
     )
 
+
 @api_view(['POST'])
 def estimate_proposal(request, pk):
     """
@@ -97,6 +101,125 @@ def estimate_proposal(request, pk):
         {
             "message": "Cost and timeline estimated successfully.",
             "proposal": ProposalSerializer(proposal).data,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(['POST'])
+def export_proposal_pdf(request, pk):
+    """
+    POST /api/proposals/proposals/{id}/export-pdf/
+    Generates a PDF for the proposal and saves it.
+    """
+    try:
+        proposal = Proposal.objects.get(id=pk)
+    except Proposal.DoesNotExist:
+        return Response({"error": "Proposal not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        generate_proposal_pdf(proposal)
+    except Exception as e:
+        return Response({"error": f"PDF generation failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response(
+        {
+            "message": "PDF generated successfully.",
+            "pdf_url": proposal.generated_pdf.url,
+            "proposal": ProposalSerializer(proposal).data,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(['POST'])
+def send_proposal_for_review_view(request, pk):
+    """
+    POST /api/proposals/proposals/{id}/send-for-review/
+    Emails the proposal PDF to the internal sales manager for review
+    and logs a ProposalDelivery record.
+    """
+    try:
+        proposal = Proposal.objects.get(id=pk)
+    except Proposal.DoesNotExist:
+        return Response({"error": "Proposal not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    if not proposal.generated_pdf:
+        return Response({"error": "No PDF generated yet. Export the PDF first."}, status=status.HTTP_400_BAD_REQUEST)
+
+    recipient_email = request.data.get('recipient_email')  # optional override
+
+    delivery = ProposalDelivery.objects.create(
+        proposal=proposal,
+        sent_to_email=recipient_email or "",
+        delivery_status='pending',
+    )
+
+    try:
+        actual_recipient = send_proposal_for_review(proposal, recipient_email)
+        delivery.sent_to_email = actual_recipient
+        delivery.delivery_status = 'sent'
+        delivery.save()
+
+        proposal.status = 'sent_for_review'
+        proposal.save()
+
+    except Exception as e:
+        delivery.delivery_status = 'failed'
+        delivery.delivery_error = str(e)
+        delivery.save()
+        return Response({"error": f"Email sending failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response(
+        {
+            "message": f"Proposal sent for review to {actual_recipient}.",
+            "delivery_id": delivery.id,
+            "proposal_status": proposal.status,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(['POST'])
+def send_proposal_to_client_view(request, pk):
+    """
+    POST /api/proposals/proposals/{id}/send-to-client/
+    Body: { "client_email": "client@example.com" }
+    Emails the proposal PDF directly to the client's email address.
+    This is separate from the internal "send for review" step.
+    """
+    try:
+        proposal = Proposal.objects.get(id=pk)
+    except Proposal.DoesNotExist:
+        return Response({"error": "Proposal not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    if not proposal.generated_pdf:
+        return Response({"error": "No PDF generated yet. Export the PDF first."}, status=status.HTTP_400_BAD_REQUEST)
+
+    client_email = request.data.get('client_email')
+    if not client_email:
+        return Response({"error": "client_email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    delivery = ProposalDelivery.objects.create(
+        proposal=proposal,
+        sent_to_email=client_email,
+        delivery_status='pending',
+    )
+
+    try:
+        send_proposal_for_review(proposal, client_email)
+        delivery.delivery_status = 'sent'
+        delivery.save()
+    except Exception as e:
+        delivery.delivery_status = 'failed'
+        delivery.delivery_error = str(e)
+        delivery.save()
+        return Response({"error": f"Email sending failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response(
+        {
+            "message": f"Proposal sent to client at {client_email}.",
+            "delivery_id": delivery.id,
         },
         status=status.HTTP_200_OK,
     )
