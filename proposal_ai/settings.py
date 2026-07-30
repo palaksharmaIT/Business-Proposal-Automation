@@ -222,8 +222,11 @@ WSGI_APPLICATION = 'proposal_ai.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+    "default": dj_database_url.parse(
+        os.environ.get(
+            "DATABASE_URL",
+            f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+        )
     )
 }
 
