@@ -223,3 +223,4 @@ def send_proposal_to_client_view(request, pk):
         },
         status=status.HTTP_200_OK,
     )
+
