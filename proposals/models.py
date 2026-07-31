@@ -40,6 +40,7 @@ class Proposal(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # generated_image = models.ImageField(upload_to='generated_images/', blank=True, null=True)
 
     def __str__(self):
         return self.title or f"Proposal #{self.pk} for {self.rfp}"

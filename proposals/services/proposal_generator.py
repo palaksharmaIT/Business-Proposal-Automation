@@ -99,3 +99,4 @@ def generate_proposal_content(rfp_requirements: dict, top_k: int = 3) -> dict:
 
     parsed["referenced_project_ids"] = referenced_project_ids
     return parsed
+
