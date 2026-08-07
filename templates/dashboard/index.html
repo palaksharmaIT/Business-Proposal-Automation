@@ -2,166 +2,503 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Proposal Assistant — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+    :root {
+        --bg: #0B0D12;
+        --panel: #15181F;
+        --panel-raised: #1E2230;
+        --panel-raised-hover: #262B3C;
+        --border: #363C4E;
+        --border-soft: #262B38;
+        --text: #F5F6FA;
+        --text-dim: #C6CADA;
+        --text-faint: #9CA1B5;
+        --violet: #8B7FF5;
+        --cyan: #5FDCF0;
+        --amber: #F0B04E;
+        --emerald: #4FE3A8;
+        --rose: #FF8888;
+        --gradient: linear-gradient(90deg, var(--violet), var(--cyan));
+        --font-display: 'Space Grotesk', sans-serif;
+        --font-body: 'Inter', sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+    }
+ 
     * { box-sizing: border-box; }
+ 
     body {
-        font-family: 'Segoe UI', Arial, sans-serif;
-        background: #f4f6f8;
+        font-family: var(--font-body);
+        background:
+            radial-gradient(ellipse 900px 500px at 15% -10%, rgba(139,127,245,0.12), transparent),
+            radial-gradient(ellipse 700px 400px at 100% 0%, rgba(95,220,240,0.07), transparent),
+            var(--bg);
         margin: 0;
-        color: #2c3e50;
+        color: var(--text);
+        min-height: 100vh;
     }
-    header {
-        background: #2c3e50;
-        color: white;
-        padding: 18px 30px;
+ 
+    ::selection { background: rgba(139,127,245,0.35); }
+ 
+    /* ---------------- Shell layout ---------------- */
+    .shell {
         display: flex;
-        justify-content: space-between;
+        min-height: 100vh;
+    }
+ 
+    /* ---------------- Rail (sidebar) ---------------- */
+    .rail {
+        width: 236px;
+        flex-shrink: 0;
+        border-right: 1px solid var(--border-soft);
+        padding: 22px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+    }
+ 
+    .brand {
+        display: flex;
         align-items: center;
-    }
-    header h1 { font-size: 20px; margin: 0; }
-    .container {
-        max-width: 1150px;
-        margin: 25px auto;
-        padding: 0 20px;
-    }
-    .tabs {
-        display: flex;
         gap: 10px;
+        padding: 0 6px;
+    }
+ 
+    .brand-mark {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+        box-shadow: 0 0 20px rgba(139,127,245,0.4);
+    }
+ 
+    .brand-text {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 14.5px;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+        color: var(--text);
+    }
+ 
+    .brand-text span {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 400;
+        color: var(--text-faint);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+ 
+    .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+ 
+    .nav-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        padding: 0 10px;
+        margin-bottom: 6px;
+    }
+ 
+    .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        padding: 10px 12px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-dim);
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: var(--font-body);
+        font-size: 13.5px;
+        font-weight: 500;
+        position: relative;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+ 
+    .tab-btn:hover { background: var(--panel-raised); color: var(--text); }
+ 
+    .tab-btn.active {
+        background: var(--panel-raised);
+        color: var(--text);
+        border-color: var(--border);
+    }
+ 
+    .tab-btn.active::before {
+        content: '';
+        position: absolute;
+        left: -16px;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        border-radius: 3px;
+        background: var(--gradient);
+        box-shadow: 0 0 10px rgba(139,127,245,0.7);
+    }
+ 
+    .tab-icon { font-size: 15px; opacity: 0.95; }
+ 
+    .rail-footer {
+        margin-top: auto;
+        padding: 10px;
+        border-top: 1px solid var(--border-soft);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+ 
+    .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: var(--text-dim);
+        min-width: 0;
+        font-weight: 500;
+    }
+ 
+    .user-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--gradient);
+        flex-shrink: 0;
+    }
+ 
+    .user-chip span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--text);
+    }
+ 
+    .logout-link {
+        color: var(--text-dim);
+        font-size: 11.5px;
+        text-decoration: none;
+        white-space: nowrap;
+        border: 1px solid var(--border);
+        padding: 4px 9px;
+        border-radius: 6px;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .logout-link:hover { color: var(--rose); border-color: rgba(255,136,136,0.5); background: rgba(255,136,136,0.08); }
+ 
+    /* ---------------- Main ---------------- */
+    .main {
+        flex: 1;
+        min-width: 0;
+        padding: 28px 36px 60px;
+    }
+ 
+    .page-head {
+        margin-bottom: 22px;
+    }
+ 
+    .page-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cyan);
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+ 
+    .page-title {
+        font-family: var(--font-display);
+        font-size: 25px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        color: var(--text);
+    }
+ 
+    /* ---------------- Panels ---------------- */
+    .panel { display: none; }
+    .panel.active { display: block; }
+ 
+    .card {
+        background: var(--panel);
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        padding: 24px 24px 20px;
         margin-bottom: 20px;
     }
-    .tab-btn {
-        padding: 10px 18px;
-        border: none;
-        background: #dfe6e9;
-        color: #2c3e50;
-        border-radius: 6px 6px 0 0;
-        cursor: pointer;
-        font-size: 14px;
+ 
+    .card-title {
+        font-family: var(--font-display);
+        font-size: 15.5px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--text);
     }
-    .tab-btn.active {
-        background: white;
-        font-weight: bold;
-        box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+ 
+    .card-title::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--gradient);
+        box-shadow: 0 0 8px rgba(139,127,245,0.8);
     }
-    .panel {
-        background: white;
-        border-radius: 0 8px 8px 8px;
-        padding: 25px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        display: none;
-    }
-    .panel.active { display: block; }
+ 
+    /* ---------------- Form controls ---------------- */
     .upload-box {
         display: flex;
         gap: 10px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-    }
-    .toolbar {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
         flex-wrap: wrap;
         align-items: center;
     }
+ 
     input[type="text"], input[type="file"], input[type="email"], select {
-        padding: 8px 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        background: var(--panel-raised);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 10px 13px;
+        border-radius: 8px;
         font-size: 13px;
+        font-family: var(--font-body);
+        outline: none;
+        transition: border-color 0.15s;
     }
-    .search-input { min-width: 220px; }
-    button.action-btn {
-        background: #2c3e50;
-        color: white;
+    input[type="text"]:focus, input[type="file"]:focus, select:focus {
+        border-color: var(--violet);
+    }
+    input[type="text"]::placeholder { color: var(--text-faint); }
+    input[type="file"] { color: var(--text-dim); }
+    input[type="file"]::file-selector-button {
+        background: var(--border);
+        color: var(--text);
         border: none;
-        padding: 8px 14px;
-        border-radius: 5px;
+        padding: 7px 11px;
+        border-radius: 6px;
+        margin-right: 10px;
         cursor: pointer;
-        font-size: 13px;
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 500;
     }
-    button.action-btn:hover { background: #34495e; }
-    button.action-btn:disabled { background: #b2bec3; cursor: not-allowed; }
+ 
+    select { cursor: pointer; }
+ 
+    .search-input { min-width: 240px; }
+ 
+    .toolbar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+ 
+    button.action-btn {
+        background: var(--panel-raised);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 12.5px;
+        font-family: var(--font-body);
+        font-weight: 600;
+        transition: border-color 0.15s, background 0.15s;
+    }
+    button.action-btn:hover { border-color: var(--violet); background: var(--panel-raised-hover); }
+    button.action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+ 
+    #uploadBtn {
+        background: var(--gradient);
+        border: none;
+        color: #0B0D12;
+        font-weight: 700;
+    }
+    #uploadBtn:hover { filter: brightness(1.1); }
+ 
     button.delete-btn {
-        background: #e74c3c;
+        background: rgba(255,136,136,0.08);
+        border: 1px solid rgba(255,136,136,0.4);
+        color: var(--rose);
     }
-    button.delete-btn:hover { background: #c0392b; }
+    button.delete-btn:hover { background: rgba(255,136,136,0.16); border-color: var(--rose); }
+ 
+    /* ---------------- Table ---------------- */
     table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
+        font-size: 13.5px;
     }
     th, td {
         text-align: left;
-        padding: 10px;
-        border-bottom: 1px solid #eee;
+        padding: 13px 10px;
+        border-bottom: 1px solid var(--border-soft);
     }
-    th { background: #f8f9fa; color: #555; }
+    th {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        font-weight: 500;
+    }
+    td { color: var(--text-dim); font-weight: 500; }
+    td:first-child { font-family: var(--font-mono); color: var(--text-faint); font-size: 12px; font-weight: 400; }
+    td:nth-child(2) { color: var(--text); font-weight: 600; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+ 
+    /* ---------------- Status badges (signature: pulse dot) ---------------- */
     .status-badge {
-        padding: 3px 9px;
-        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px 5px 9px;
+        border-radius: 20px;
         font-size: 11px;
-        font-weight: bold;
-        color: white;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        letter-spacing: 0.02em;
         white-space: nowrap;
+        border: 1px solid transparent;
     }
-    .status-uploaded { background: #95a5a6; }
-    .status-extracted { background: #3498db; }
-    .status-analyzed { background: #9b59b6; }
-    .status-failed { background: #e74c3c; }
-    .status-draft { background: #95a5a6; }
-    .status-generated { background: #2980b9; }
-    .status-sent_for_review { background: #f39c12; }
-    .status-approved { background: #27ae60; }
-    .status-rejected { background: #e74c3c; }
+    .status-badge::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+ 
+    .status-uploaded, .status-draft {
+        background: rgba(198,202,218,0.14); color: #DADDE8; border-color: rgba(198,202,218,0.3);
+    }
+    .status-uploaded::before, .status-draft::before { background: #DADDE8; }
+ 
+    .status-extracted, .status-generated {
+        background: rgba(95,220,240,0.14); color: var(--cyan); border-color: rgba(95,220,240,0.35);
+    }
+    .status-extracted::before, .status-generated::before {
+        background: var(--cyan); box-shadow: 0 0 6px var(--cyan);
+        animation: pulse 1.6s ease-in-out infinite;
+    }
+ 
+    .status-analyzed {
+        background: rgba(139,127,245,0.16); color: #B3A9FF; border-color: rgba(139,127,245,0.4);
+    }
+    .status-analyzed::before { background: #B3A9FF; box-shadow: 0 0 6px #B3A9FF; }
+ 
+    .status-failed, .status-rejected {
+        background: rgba(255,136,136,0.14); color: var(--rose); border-color: rgba(255,136,136,0.35);
+    }
+    .status-failed::before, .status-rejected::before { background: var(--rose); }
+ 
+    .status-sent_for_review {
+        background: rgba(240,176,78,0.16); color: var(--amber); border-color: rgba(240,176,78,0.4);
+    }
+    .status-sent_for_review::before {
+        background: var(--amber); box-shadow: 0 0 6px var(--amber);
+        animation: pulse 1.6s ease-in-out infinite;
+    }
+ 
+    .status-approved {
+        background: rgba(79,227,168,0.16); color: var(--emerald); border-color: rgba(79,227,168,0.4);
+    }
+    .status-approved::before { background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
+ 
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+ 
     .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
-    .actions-cell button { font-size: 11px; padding: 5px 8px; }
-    .loading { color: #888; font-style: italic; font-size: 13px; }
+    .actions-cell button { font-size: 11.5px; padding: 7px 11px; }
+ 
+    .loading { color: var(--text-faint); font-style: italic; font-size: 13px; }
+ 
+    /* ---------------- Message box ---------------- */
     .msg-box {
-        margin-top: 12px;
-        padding: 10px 14px;
-        border-radius: 6px;
+        margin-top: 14px;
+        padding: 12px 15px;
+        border-radius: 9px;
         font-size: 13px;
         display: none;
         align-items: center;
         gap: 10px;
+        font-family: var(--font-body);
+        font-weight: 500;
+        border: 1px solid transparent;
     }
     .msg-box.show { display: flex; }
-    .msg-success { background: #eafaf1; color: #27ae60; border: 1px solid #27ae60; }
-    .msg-error { background: #fdedec; color: #e74c3c; border: 1px solid #e74c3c; }
-    .msg-loading { background: #eef4fb; color: #2980b9; border: 1px solid #2980b9; }
-    a.pdf-link { color: #2980b9; text-decoration: none; font-size: 12px; }
+    .msg-success { background: rgba(79,227,168,0.1); color: var(--emerald); border-color: rgba(79,227,168,0.3); }
+    .msg-error { background: rgba(255,136,136,0.1); color: var(--rose); border-color: rgba(255,136,136,0.3); }
+    .msg-loading { background: rgba(139,127,245,0.1); color: #B3A9FF; border-color: rgba(139,127,245,0.3); }
  
-    /* Spinner */
+    a.pdf-link {
+        color: var(--cyan);
+        text-decoration: none;
+        font-size: 12.5px;
+        font-family: var(--font-mono);
+        font-weight: 500;
+        border-bottom: 1px solid rgba(95,220,240,0.4);
+    }
+    a.pdf-link:hover { border-color: var(--cyan); }
+ 
+    /* ---------------- Spinners ---------------- */
     .spinner {
-        width: 14px;
-        height: 14px;
-        border: 2px solid rgba(0,0,0,0.15);
-        border-top-color: currentColor;
+        width: 13px;
+        height: 13px;
+        border: 2px solid rgba(139,127,245,0.25);
+        border-top-color: var(--violet);
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
         flex-shrink: 0;
     }
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+ 
     .btn-spinner {
         display: inline-block;
-        width: 11px;
-        height: 11px;
+        width: 10px;
+        height: 10px;
         border: 2px solid rgba(255,255,255,0.4);
-        border-top-color: white;
+        border-top-color: currentColor;
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
-        margin-right: 5px;
+        margin-right: 6px;
         vertical-align: middle;
     }
+ 
     .empty-row td {
         text-align: center;
-        color: #999;
-        padding: 24px;
+        color: var(--text-faint);
+        padding: 34px 10px;
         font-style: italic;
+        font-family: var(--font-body);
+    }
+ 
+    @media (max-width: 860px) {
+        .rail { display: none; }
+        .main { padding: 20px 16px 40px; }
     }
 </style>
 </head>
@@ -169,80 +506,114 @@
  
 {% csrf_token %}
  
-<header>
-    <h1>🧠 AI Business Proposal Assistant</h1>
-    <div style="display:flex; align-items:center; gap:15px;">
-        <span style="font-size:13px; opacity:0.8;">👤 {{ request.user.username }}</span>
-        <a href="/logout/" style="color:white; font-size:13px; text-decoration:underline;">Logout</a>
-    </div>
-</header>
+<div class="shell">
  
-<div class="container">
- 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('rfps')">📄 RFPs</button>
-        <button class="tab-btn" onclick="switchTab('proposals')">📋 Proposals</button>
-    </div>
- 
-    <!-- RFPs Panel -->
-    <div id="rfps" class="panel active">
-        <h2>Upload New RFP</h2>
-        <form id="uploadForm" class="upload-box">
-            <input type="text" id="rfpTitle" placeholder="RFP Title" required>
-            <input type="file" id="rfpFile" accept=".pdf,.docx,.txt" required>
-            <button type="submit" class="action-btn" id="uploadBtn">Upload</button>
-        </form>
-        <div id="uploadMsg" class="msg-box"></div>
- 
-        <h2 style="margin-top:30px;">All RFPs</h2>
-        <div class="toolbar">
-            <input type="text" id="rfpSearch" class="search-input" placeholder="🔍 Search by title...">
-            <select id="rfpStatusFilter">
-                <option value="">All Statuses</option>
-                <option value="uploaded">Uploaded</option>
-                <option value="extracted">Extracted</option>
-                <option value="analyzed">Analyzed</option>
-                <option value="failed">Failed</option>
-            </select>
+    <aside class="rail">
+        <div class="brand">
+            <div class="brand-mark">🧠</div>
+            <div class="brand-text">
+                Proposal Engine
+                <span>AI Pipeline</span>
+            </div>
         </div>
-        <table id="rfpTable">
-            <thead>
-                <tr>
-                    <th>ID</th><th>Title</th><th>Status</th><th>Uploaded</th><th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="rfpTableBody">
-                <tr><td colspan="5" class="loading">Loading RFPs...</td></tr>
-            </tbody>
-        </table>
-    </div>
  
-    <!-- Proposals Panel -->
-    <div id="proposals" class="panel">
-        <h2>All Proposals</h2>
-        <div class="toolbar">
-            <input type="text" id="proposalSearch" class="search-input" placeholder="🔍 Search by title...">
-            <select id="proposalStatusFilter">
-                <option value="">All Statuses</option>
-                <option value="draft">Draft</option>
-                <option value="generated">Generated</option>
-                <option value="sent_for_review">Sent for Review</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-            </select>
+        <nav class="nav">
+            <div class="nav-label">Workspace</div>
+            <button class="tab-btn active" onclick="switchTab('rfps')">
+                <span class="tab-icon">📄</span> RFPs
+            </button>
+            <button class="tab-btn" onclick="switchTab('proposals')">
+                <span class="tab-icon">📋</span> Proposals
+            </button>
+        </nav>
+ 
+        <div class="rail-footer">
+            <div class="user-chip">
+                <div class="user-dot"></div>
+                <span>{{ request.user.username }}</span>
+            </div>
+            <a href="/logout/" class="logout-link">Log out</a>
         </div>
-        <table id="proposalTable">
-            <thead>
-                <tr>
-                    <th>ID</th><th>Title</th><th>Cost</th><th>Timeline</th><th>Status</th><th>PDF</th><th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="proposalTableBody">
-                <tr><td colspan="7" class="loading">Loading proposals...</td></tr>
-            </tbody>
-        </table>
-    </div>
+    </aside>
  
+    <main class="main">
+ 
+        <!-- RFPs Panel -->
+        <div id="rfps" class="panel active">
+            <div class="page-head">
+                <div class="page-eyebrow">Stage 01 — Intake</div>
+                <div class="page-title">Requests for Proposal</div>
+            </div>
+ 
+            <div class="card">
+                <div class="card-title">Upload new RFP</div>
+                <form id="uploadForm" class="upload-box">
+                    <input type="text" id="rfpTitle" placeholder="RFP title" required>
+                    <input type="file" id="rfpFile" accept=".pdf,.docx,.txt" required>
+                    <button type="submit" class="action-btn" id="uploadBtn">Upload</button>
+                </form>
+                <div id="uploadMsg" class="msg-box"></div>
+            </div>
+ 
+            <div class="card">
+                <div class="card-title">All RFPs</div>
+                <div class="toolbar">
+                    <input type="text" id="rfpSearch" class="search-input" placeholder="Search by title…">
+                    <select id="rfpStatusFilter">
+                        <option value="">All statuses</option>
+                        <option value="uploaded">Uploaded</option>
+                        <option value="extracted">Extracted</option>
+                        <option value="analyzed">Analyzed</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                <table id="rfpTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Title</th><th>Status</th><th>Uploaded</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rfpTableBody">
+                        <tr><td colspan="5" class="loading">Loading RFPs…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+ 
+        <!-- Proposals Panel -->
+        <div id="proposals" class="panel">
+            <div class="page-head">
+                <div class="page-eyebrow">Stage 02–05 — Generate · Estimate · Export · Send</div>
+                <div class="page-title">Proposals</div>
+            </div>
+ 
+            <div class="card">
+                <div class="card-title">All Proposals</div>
+                <div class="toolbar">
+                    <input type="text" id="proposalSearch" class="search-input" placeholder="Search by title…">
+                    <select id="proposalStatusFilter">
+                        <option value="">All statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="generated">Generated</option>
+                        <option value="sent_for_review">Sent for review</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <table id="proposalTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Title</th><th>Cost</th><th>Timeline</th><th>Status</th><th>PDF</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proposalTableBody">
+                        <tr><td colspan="7" class="loading">Loading proposals…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+ 
+    </main>
 </div>
  
 <script>
@@ -283,7 +654,7 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById(tab).classList.add('active');
-    event.target.classList.add('active');
+    event.target.closest('.tab-btn').classList.add('active');
     if (tab === 'proposals') loadProposals();
 }
  
@@ -303,7 +674,7 @@ function hideMsg(elId) {
 function statusBadge(status) {
     return `<span class="status-badge status-${status}">${status.replace(/_/g, ' ')}</span>`;
 }
- 
+
 function setButtonLoading(btn, loadingText) {
     btn.dataset.originalText = btn.innerHTML;
     btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
@@ -330,7 +701,7 @@ function renderRfps() {
  
     const rows = filtered.map(rfp => `
         <tr>
-            <td>${rfp.id}</td>
+            <td>#${rfp.id}</td>
             <td>${rfp.title || '-'}</td>
             <td>${statusBadge(rfp.status)}</td>
             <td>${new Date(rfp.uploaded_at).toLocaleString()}</td>
@@ -338,12 +709,12 @@ function renderRfps() {
                 ${rfp.status === 'extracted' || rfp.status === 'analyzed'
                     ? `<button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Analyze</button>` : ''}
                 ${rfp.status === 'analyzed'
-                    ? `<button class="action-btn" onclick="generateProposal(${rfp.id}, this)">Generate Proposal</button>` : ''}
+                    ? `<button class="action-btn" onclick="generateProposal(${rfp.id}, this)">Generate proposal</button>` : ''}
                 <button class="action-btn delete-btn" onclick="deleteRfp(${rfp.id}, this)">Delete</button>
             </td>
         </tr>
     `).join('');
-    document.getElementById('rfpTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="5">No RFPs match your search/filter.</td></tr>';
+    document.getElementById('rfpTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="5">No RFPs match your search or filter.</td></tr>';
 }
  
 document.getElementById('rfpSearch').addEventListener('input', renderRfps);
@@ -359,8 +730,8 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     formData.append('title', title);
     formData.append('file', file);
  
-    setButtonLoading(uploadBtn, 'Uploading...');
-    showMsg('uploadMsg', 'Uploading and extracting text from file...', 'loading');
+    setButtonLoading(uploadBtn, 'Uploading…');
+    showMsg('uploadMsg', 'Uploading and extracting text from file…', 'loading');
  
     try {
         const res = await fetch(API.rfps, {
@@ -385,8 +756,8 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
 });
  
 async function analyzeRfp(id, btn) {
-    setButtonLoading(btn, 'Analyzing...');
-    showMsg('uploadMsg', 'Analyzing RFP with AI...', 'loading');
+    setButtonLoading(btn, 'Analyzing…');
+    showMsg('uploadMsg', 'Analyzing RFP with AI…', 'loading');
     try {
         const res = await fetch(API.analyze(id), {
             method: 'POST',
@@ -404,8 +775,8 @@ async function analyzeRfp(id, btn) {
 }
  
 async function generateProposal(rfpId, btn) {
-    setButtonLoading(btn, 'Generating...');
-    showMsg('uploadMsg', 'Generating proposal... this may take 10-20 seconds.', 'loading');
+    setButtonLoading(btn, 'Generating…');
+    showMsg('uploadMsg', 'Generating proposal… this may take 10–20 seconds.', 'loading');
     try {
         const res = await fetch(API.generate, {
             method: 'POST',
@@ -417,7 +788,7 @@ async function generateProposal(rfpId, btn) {
         });
         const data = await res.json();
         if (res.ok) {
-            showMsg('uploadMsg', 'Proposal generated! Check the Proposals tab.', 'success');
+            showMsg('uploadMsg', 'Proposal generated. Check the Proposals tab.', 'success');
         } else {
             showMsg('uploadMsg', data.error || 'Proposal generation failed.', 'error');
         }
@@ -428,7 +799,7 @@ async function generateProposal(rfpId, btn) {
  
 async function deleteRfp(id, btn) {
     if (!confirm('Delete this RFP? This cannot be undone.')) return;
-    setButtonLoading(btn, 'Deleting...');
+    setButtonLoading(btn, 'Deleting…');
     try {
         const res = await fetch(API.rfpDetail(id), {
             method: 'DELETE',
@@ -455,7 +826,6 @@ async function loadProposals() {
 function renderProposals() {
     const searchTerm = document.getElementById('proposalSearch').value.toLowerCase();
     const statusFilter = document.getElementById('proposalStatusFilter').value;
-
  
     let filtered = allProposals.filter(p => {
         const matchesSearch = (p.title || '').toLowerCase().includes(searchTerm);
@@ -465,27 +835,29 @@ function renderProposals() {
  
     const rows = filtered.map(p => `
         <tr>
-            <td>${p.id}</td>
+            <td>#${p.id}</td>
             <td>${p.title || '-'}</td>
-            <td>${p.estimated_cost ? '$' + p.estimated_cost : '-'}</td>
-            <td>${p.estimated_timeline_weeks ? p.estimated_timeline_weeks + ' wks' : '-'}</td>
+            <td>${p.estimated_cost ? '$' + p.estimated_cost : '—'}</td>
+            <td>${p.estimated_timeline_weeks ? p.estimated_timeline_weeks + ' wks' : '—'}</td>
             <td>${statusBadge(p.status)}</td>
-            <td>${p.generated_pdf ? `<a class="pdf-link" href="${p.generated_pdf}" target="_blank">View PDF</a>` : '-'}</td>
+            <td>${p.generated_pdf ? `<a class="pdf-link" href="${p.generated_pdf}" target="_blank">View PDF</a>` : '—'}</td>
             <td class="actions-cell">
-                ${p.generated_pdf && p.status !== 'sent_for_review' ? `<button class="action-btn" onclick="sendReview(${p.id}, this)">Send for Review</button>` : ''}
-                ${p.generated_pdf ? `<button class="action-btn" style="background:#27ae60;" onclick="sendToClient(${p.id}, this)">Send to Client</button>` : ''}
+                ${!p.estimated_cost ? `<button class="action-btn" onclick="estimateProposal(${p.id}, this)">Estimate</button>` : ''}
+                ${p.estimated_cost && !p.generated_pdf ? `<button class="action-btn" onclick="exportPdf(${p.id}, this)">Export PDF</button>` : ''}
+                ${p.generated_pdf && p.status !== 'sent_for_review' ? `<button class="action-btn" onclick="sendReview(${p.id}, this)">Send for review</button>` : ''}
+                ${p.generated_pdf ? `<button class="action-btn" onclick="sendToClient(${p.id}, this)">Send to client</button>` : ''}
                 <button class="action-btn delete-btn" onclick="deleteProposal(${p.id}, this)">Delete</button>
             </td>
         </tr>
     `).join('');
-    document.getElementById('proposalTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="7">No proposals match your search/filter.</td></tr>';
+    document.getElementById('proposalTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="7">No proposals match your search or filter.</td></tr>';
 }
  
 document.getElementById('proposalSearch').addEventListener('input', renderProposals);
 document.getElementById('proposalStatusFilter').addEventListener('change', renderProposals);
  
 async function estimateProposal(id, btn) {
-    setButtonLoading(btn, 'Estimating...');
+    setButtonLoading(btn, 'Estimating…');
     try {
         const res = await fetch(API.estimate(id), {
             method: 'POST',
@@ -499,7 +871,7 @@ async function estimateProposal(id, btn) {
 }
  
 async function exportPdf(id, btn) {
-    setButtonLoading(btn, 'Exporting...');
+    setButtonLoading(btn, 'Exporting…');
     try {
         const res = await fetch(API.exportPdf(id), {
             method: 'POST',
@@ -513,7 +885,7 @@ async function exportPdf(id, btn) {
 }
  
 async function sendReview(id, btn) {
-    setButtonLoading(btn, 'Sending...');
+    setButtonLoading(btn, 'Sending…');
     try {
         const res = await fetch(API.sendReview(id), {
             method: 'POST',
@@ -530,27 +902,11 @@ async function sendReview(id, btn) {
     }
 }
  
-async function deleteProposal(id, btn) {
-    if (!confirm('Delete this proposal? This cannot be undone.')) return;
-    setButtonLoading(btn, 'Deleting...');
-    try {
-        const res = await fetch(API.proposalDetail(id), {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': CSRF_TOKEN }
-        });
-        if (!(res.ok || res.status === 204)) {
-            alert('Delete failed.');
-        }
-    } finally {
-        loadProposals();
-    }
-}
-
 async function sendToClient(id, btn) {
     const clientEmail = prompt("Enter client's email address:");
     if (!clientEmail) return;
-
-    setButtonLoading(btn, 'Sending...');
+ 
+    setButtonLoading(btn, 'Sending…');
     try {
         const res = await fetch(API.sendToClient(id), {
             method: 'POST',
@@ -571,10 +927,29 @@ async function sendToClient(id, btn) {
     }
 }
  
+async function deleteProposal(id, btn) {
+    if (!confirm('Delete this proposal? This cannot be undone.')) return;
+    setButtonLoading(btn, 'Deleting…');
+    try {
+        const res = await fetch(API.proposalDetail(id), {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        if (!(res.ok || res.status === 204)) {
+            alert('Delete failed.');
+        }
+    } finally {
+        loadProposals();
+
+    }
+}
+ 
 // Init
 loadRfps();
 </script>
  
 </body>
 </html>
- 
+
+how this all work like how the analysis and proposal generation works and how it analyzes
+
