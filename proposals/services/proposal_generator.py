@@ -92,11 +92,16 @@ def generate_proposal_content(rfp_requirements: dict, top_k: int = 3) -> dict:
     raw_output = _extract_text_from_response(response)
     raw_output = _clean_json_output(raw_output)
 
+
     try:
         parsed = json.loads(raw_output)
     except json.JSONDecodeError as e:
         raise ValueError(f"Gemini returned invalid JSON: {raw_output}") from e
 
     parsed["referenced_project_ids"] = referenced_project_ids
-    return parsed
+    return parsed 
+
+
+
+
 

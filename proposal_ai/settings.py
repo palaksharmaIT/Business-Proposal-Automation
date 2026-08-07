@@ -289,6 +289,8 @@ CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SITE_URL = "http://127.0.0.1:8000"
+
 
 
 
