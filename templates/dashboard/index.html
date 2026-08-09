@@ -27,9 +27,9 @@
         --font-body: 'Inter', sans-serif;
         --font-mono: 'JetBrains Mono', monospace;
     }
- 
+
     * { box-sizing: border-box; }
- 
+
     body {
         font-family: var(--font-body);
         background:
@@ -40,15 +40,15 @@
         color: var(--text);
         min-height: 100vh;
     }
- 
+
     ::selection { background: rgba(139,127,245,0.35); }
- 
+
     /* ---------------- Shell layout ---------------- */
     .shell {
         display: flex;
         min-height: 100vh;
     }
- 
+
     /* ---------------- Rail (sidebar) ---------------- */
     .rail {
         width: 236px;
@@ -59,14 +59,14 @@
         flex-direction: column;
         gap: 28px;
     }
- 
+
     .brand {
         display: flex;
         align-items: center;
         gap: 10px;
         padding: 0 6px;
     }
- 
+
     .brand-mark {
         width: 30px;
         height: 30px;
@@ -79,7 +79,7 @@
         flex-shrink: 0;
         box-shadow: 0 0 20px rgba(139,127,245,0.4);
     }
- 
+
     .brand-text {
         font-family: var(--font-display);
         font-weight: 600;
@@ -88,7 +88,7 @@
         letter-spacing: -0.01em;
         color: var(--text);
     }
- 
+
     .brand-text span {
         display: block;
         font-family: var(--font-mono);
@@ -99,13 +99,13 @@
         text-transform: uppercase;
         margin-top: 2px;
     }
- 
+
     .nav {
         display: flex;
         flex-direction: column;
         gap: 4px;
     }
- 
+
     .nav-label {
         font-family: var(--font-mono);
         font-size: 10px;
@@ -115,7 +115,7 @@
         padding: 0 10px;
         margin-bottom: 6px;
     }
- 
+
     .tab-btn {
         display: flex;
         align-items: center;
@@ -134,15 +134,15 @@
         position: relative;
         transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
- 
+
     .tab-btn:hover { background: var(--panel-raised); color: var(--text); }
- 
+
     .tab-btn.active {
         background: var(--panel-raised);
         color: var(--text);
         border-color: var(--border);
     }
- 
+
     .tab-btn.active::before {
         content: '';
         position: absolute;
@@ -154,9 +154,70 @@
         background: var(--gradient);
         box-shadow: 0 0 10px rgba(139,127,245,0.7);
     }
- 
+
     .tab-icon { font-size: 15px; opacity: 0.95; }
- 
+
+    /* ---------------- Pipeline map (fills rail, reinforces product identity) ---------------- */
+    .pipeline-map {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 4px 10px;
+    }
+
+    .pipeline-step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        position: relative;
+    }
+
+    .pipeline-step .stem {
+        position: relative;
+        width: 8px;
+        display: flex;
+        justify-content: center;
+        align-self: stretch;
+    }
+
+    .pipeline-step .stem::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        bottom: -8px;
+        width: 1px;
+        background: var(--border);
+    }
+    .pipeline-step:first-child .stem::before { top: 50%; }
+    .pipeline-step:last-child .stem::before { bottom: 50%; }
+
+    .pipeline-step .node {
+        position: relative;
+        z-index: 1;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--border);
+        flex-shrink: 0;
+    }
+
+    .pipeline-step.done .node { background: var(--emerald); box-shadow: 0 0 6px rgba(79,227,168,0.7); }
+    .pipeline-step.live .node {
+        background: var(--violet);
+        box-shadow: 0 0 8px rgba(139,127,245,0.9);
+        animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    .pipeline-step .label {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--text-faint);
+        letter-spacing: 0.01em;
+    }
+    .pipeline-step.done .label { color: var(--text-dim); }
+    .pipeline-step.live .label { color: var(--text); font-weight: 500; }
+
     .rail-footer {
         margin-top: auto;
         padding: 10px;
@@ -166,7 +227,7 @@
         justify-content: space-between;
         gap: 8px;
     }
- 
+
     .user-chip {
         display: flex;
         align-items: center;
@@ -176,7 +237,7 @@
         min-width: 0;
         font-weight: 500;
     }
- 
+
     .user-dot {
         width: 20px;
         height: 20px;
@@ -184,14 +245,14 @@
         background: var(--gradient);
         flex-shrink: 0;
     }
- 
+
     .user-chip span {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         color: var(--text);
     }
- 
+
     .logout-link {
         color: var(--text-dim);
         font-size: 11.5px;
@@ -203,18 +264,18 @@
         transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
     .logout-link:hover { color: var(--rose); border-color: rgba(255,136,136,0.5); background: rgba(255,136,136,0.08); }
- 
+
     /* ---------------- Main ---------------- */
     .main {
         flex: 1;
         min-width: 0;
         padding: 28px 36px 60px;
     }
- 
+
     .page-head {
         margin-bottom: 22px;
     }
- 
+
     .page-eyebrow {
         font-family: var(--font-mono);
         font-size: 11px;
@@ -224,7 +285,7 @@
         margin-bottom: 6px;
         font-weight: 500;
     }
- 
+
     .page-title {
         font-family: var(--font-display);
         font-size: 25px;
@@ -232,11 +293,11 @@
         letter-spacing: -0.015em;
         color: var(--text);
     }
- 
+
     /* ---------------- Panels ---------------- */
     .panel { display: none; }
     .panel.active { display: block; }
- 
+
     .card {
         background: var(--panel);
         border: 1px solid var(--border-soft);
@@ -244,7 +305,7 @@
         padding: 24px 24px 20px;
         margin-bottom: 20px;
     }
- 
+
     .card-title {
         font-family: var(--font-display);
         font-size: 15.5px;
@@ -255,7 +316,7 @@
         gap: 9px;
         color: var(--text);
     }
- 
+
     .card-title::before {
         content: '';
         width: 6px;
@@ -264,7 +325,7 @@
         background: var(--gradient);
         box-shadow: 0 0 8px rgba(139,127,245,0.8);
     }
- 
+
     /* ---------------- Form controls ---------------- */
     .upload-box {
         display: flex;
@@ -272,7 +333,7 @@
         flex-wrap: wrap;
         align-items: center;
     }
- 
+
     input[type="text"], input[type="file"], input[type="email"], select {
         background: var(--panel-raised);
         border: 1px solid var(--border);
@@ -301,11 +362,11 @@
         font-size: 12px;
         font-weight: 500;
     }
- 
+
     select { cursor: pointer; }
- 
+
     .search-input { min-width: 240px; }
- 
+
     .toolbar {
         display: flex;
         gap: 10px;
@@ -313,22 +374,32 @@
         flex-wrap: wrap;
         align-items: center;
     }
- 
+
+    /* ---------------- Buttons: secondary (default) ---------------- */
     button.action-btn {
         background: var(--panel-raised);
         border: 1px solid var(--border);
-        color: var(--text);
+        color: var(--text-dim);
         padding: 8px 14px;
         border-radius: 8px;
         cursor: pointer;
         font-size: 12.5px;
         font-family: var(--font-body);
         font-weight: 600;
-        transition: border-color 0.15s, background 0.15s;
+        transition: border-color 0.15s, background 0.15s, color 0.15s;
     }
-    button.action-btn:hover { border-color: var(--violet); background: var(--panel-raised-hover); }
+    button.action-btn:hover { border-color: var(--violet); background: var(--panel-raised-hover); color: var(--text); }
     button.action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
- 
+
+    /* ---------------- Buttons: primary (the natural next step) ---------------- */
+    button.action-btn.primary {
+        background: var(--gradient);
+        border: none;
+        color: #0B0D12;
+        font-weight: 700;
+    }
+    button.action-btn.primary:hover { filter: brightness(1.1); border: none; }
+
     #uploadBtn {
         background: var(--gradient);
         border: none;
@@ -336,14 +407,14 @@
         font-weight: 700;
     }
     #uploadBtn:hover { filter: brightness(1.1); }
- 
+
     button.delete-btn {
-        background: rgba(255,136,136,0.08);
-        border: 1px solid rgba(255,136,136,0.4);
-        color: var(--rose);
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-faint);
     }
-    button.delete-btn:hover { background: rgba(255,136,136,0.16); border-color: var(--rose); }
- 
+    button.delete-btn:hover { background: rgba(255,136,136,0.12); border-color: var(--rose); color: var(--rose); }
+
     /* ---------------- Table ---------------- */
     table {
         width: 100%;
@@ -366,8 +437,10 @@
     td { color: var(--text-dim); font-weight: 500; }
     td:first-child { font-family: var(--font-mono); color: var(--text-faint); font-size: 12px; font-weight: 400; }
     td:nth-child(2) { color: var(--text); font-weight: 600; }
-    tbody tr:hover { background: rgba(255,255,255,0.03); }
- 
+
+    tbody tr:nth-child(even) { background: rgba(255,255,255,0.014); }
+    tbody tr:hover { background: rgba(139,127,245,0.07); }
+
     /* ---------------- Status badges (signature: pulse dot) ---------------- */
     .status-badge {
         display: inline-flex;
@@ -389,12 +462,12 @@
         border-radius: 50%;
         flex-shrink: 0;
     }
- 
+
     .status-uploaded, .status-draft {
         background: rgba(198,202,218,0.14); color: #DADDE8; border-color: rgba(198,202,218,0.3);
     }
     .status-uploaded::before, .status-draft::before { background: #DADDE8; }
- 
+
     .status-extracted, .status-generated {
         background: rgba(95,220,240,0.14); color: var(--cyan); border-color: rgba(95,220,240,0.35);
     }
@@ -402,17 +475,17 @@
         background: var(--cyan); box-shadow: 0 0 6px var(--cyan);
         animation: pulse 1.6s ease-in-out infinite;
     }
- 
+
     .status-analyzed {
         background: rgba(139,127,245,0.16); color: #B3A9FF; border-color: rgba(139,127,245,0.4);
     }
     .status-analyzed::before { background: #B3A9FF; box-shadow: 0 0 6px #B3A9FF; }
- 
+
     .status-failed, .status-rejected {
         background: rgba(255,136,136,0.14); color: var(--rose); border-color: rgba(255,136,136,0.35);
     }
     .status-failed::before, .status-rejected::before { background: var(--rose); }
- 
+
     .status-sent_for_review {
         background: rgba(240,176,78,0.16); color: var(--amber); border-color: rgba(240,176,78,0.4);
     }
@@ -420,22 +493,22 @@
         background: var(--amber); box-shadow: 0 0 6px var(--amber);
         animation: pulse 1.6s ease-in-out infinite;
     }
- 
+
     .status-approved {
         background: rgba(79,227,168,0.16); color: var(--emerald); border-color: rgba(79,227,168,0.4);
     }
     .status-approved::before { background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
- 
+
     @keyframes pulse {
         0%, 100% { opacity: 1; }
         50% { opacity: 0.4; }
     }
- 
+
     .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
     .actions-cell button { font-size: 11.5px; padding: 7px 11px; }
- 
+
     .loading { color: var(--text-faint); font-style: italic; font-size: 13px; }
- 
+
     /* ---------------- Message box ---------------- */
     .msg-box {
         margin-top: 14px;
@@ -453,7 +526,7 @@
     .msg-success { background: rgba(79,227,168,0.1); color: var(--emerald); border-color: rgba(79,227,168,0.3); }
     .msg-error { background: rgba(255,136,136,0.1); color: var(--rose); border-color: rgba(255,136,136,0.3); }
     .msg-loading { background: rgba(139,127,245,0.1); color: #B3A9FF; border-color: rgba(139,127,245,0.3); }
- 
+
     a.pdf-link {
         color: var(--cyan);
         text-decoration: none;
@@ -463,7 +536,7 @@
         border-bottom: 1px solid rgba(95,220,240,0.4);
     }
     a.pdf-link:hover { border-color: var(--cyan); }
- 
+
     /* ---------------- Spinners ---------------- */
     .spinner {
         width: 13px;
@@ -475,7 +548,7 @@
         flex-shrink: 0;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
- 
+
     .btn-spinner {
         display: inline-block;
         width: 10px;
@@ -487,7 +560,7 @@
         margin-right: 6px;
         vertical-align: middle;
     }
- 
+
     .empty-row td {
         text-align: center;
         color: var(--text-faint);
@@ -495,19 +568,272 @@
         font-style: italic;
         font-family: var(--font-body);
     }
- 
+
     @media (max-width: 860px) {
         .rail { display: none; }
         .main { padding: 20px 16px 40px; }
     }
+ /* ============================= */
+/* REQUIREMENTS MODAL - DARK THEME */
+/* ============================= */
+
+.requirements-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    width: 100%;
+    height: 100%;
+
+    /* Dark overlay */
+    background: rgba(0, 0, 0, 0.75);
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+
+/* ============================= */
+/* MODAL BOX */
+/* ============================= */
+
+.requirements-modal-content {
+    width: 90%;
+    max-width: 750px;
+    max-height: 80vh;
+
+    /* DARK THEME */
+    background: #0d1117;
+
+    border: 1px solid #252b35;
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.8);
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ============================= */
+/* HEADER */
+/* ============================= */
+
+.requirements-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 22px 26px;
+
+    background: #0d1117;
+
+    border-bottom: 1px solid #252b35;
+}
+
+.requirements-modal-header h2 {
+    color: #f1f5f9;
+
+    margin: 0 0 6px 0;
+
+    font-size: 24px;
+    font-weight: 600;
+}
+
+#requirementsRfpTitle {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 14px;
+
+    color: #7f8a9a;
+}
+
+
+/* ============================= */
+/* X CLOSE BUTTON */
+/* ============================= */
+
+.requirements-close {
+    border: none;
+
+    background: transparent;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+    color: #8b949e;
+
+    padding: 5px 10px;
+
+    transition: 0.2s;
+}
+
+.requirements-close:hover {
+    color: #ffffff;
+
+    background: #1a2029;
+
+    border-radius: 6px;
+}
+
+
+/* ============================= */
+/* CONTENT */
+/* ============================= */
+
+.requirements-content {
+    padding: 26px;
+
+    overflow-y: auto;
+
+    line-height: 1.6;
+
+    color: #c9d1d9;
+
+    flex: 1;
+}
+
+
+/* Scrollbar */
+
+.requirements-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.requirements-content::-webkit-scrollbar-track {
+    background: #0d1117;
+}
+
+.requirements-content::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 10px;
+}
+
+.requirements-content::-webkit-scrollbar-thumb:hover {
+    background: #484f58;
+}
+
+
+/* ============================= */
+/* REQUIREMENT ITEM */
+/* ============================= */
+
+.requirement-item {
+    margin-bottom: 28px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid #21262d;
+}
+
+.requirement-item:last-child {
+    border-bottom: none;
+}
+
+
+.requirement-item h3 {
+    color: #e6edf3;
+
+    margin: 0 0 10px 0;
+
+    font-size: 19px;
+
+    font-weight: 600;
+}
+
+.requirement-item p {
+    color: #aab4c0;
+
+    margin: 0;
+
+    font-size: 16px;
+}
+
+.requirement-item ul {
+    margin: 8px 0 0;
+
+    padding-left: 24px;
+}
+
+.requirement-item li {
+    color: #aab4c0;
+
+    margin-bottom: 7px;
+
+    font-size: 16px;
+}
+
+
+/* ============================= */
+/* NESTED REQUIREMENTS */
+/* ============================= */
+
+.nested-requirements {
+    padding-left: 15px;
+}
+
+
+/* ============================= */
+/* FOOTER */
+/* ============================= */
+
+.requirements-modal-footer {
+    padding: 16px 26px;
+
+    background: #0d1117;
+
+    border-top: 1px solid #252b35;
+
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+
+/* ============================= */
+/* CLOSE BUTTON */
+/* ============================= */
+
+.requirements-close-btn {
+    border: 1px solid #30363d;
+
+    padding: 10px 20px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    background: #161b22;
+
+    color: #c9d1d9;
+
+    transition: 0.2s;
+}
+
+.requirements-close-btn:hover {
+    background: #21262d;
+
+    color: #ffffff;
+}
 </style>
 </head>
 <body>
- 
+
 {% csrf_token %}
- 
+
 <div class="shell">
- 
+
     <aside class="rail">
         <div class="brand">
             <div class="brand-mark">🧠</div>
@@ -516,7 +842,7 @@
                 <span>AI Pipeline</span>
             </div>
         </div>
- 
+
         <nav class="nav">
             <div class="nav-label">Workspace</div>
             <button class="tab-btn active" onclick="switchTab('rfps')">
@@ -526,7 +852,19 @@
                 <span class="tab-icon">📋</span> Proposals
             </button>
         </nav>
- 
+
+        <div>
+            <div class="nav-label">Pipeline</div>
+            <div class="pipeline-map">
+                <div class="pipeline-step done"><div class="stem"><div class="node"></div></div><div class="label">Intake</div></div>
+                <div class="pipeline-step done"><div class="stem"><div class="node"></div></div><div class="label">Analyze</div></div>
+                <div class="pipeline-step live"><div class="stem"><div class="node"></div></div><div class="label">Generate</div></div>
+                <div class="pipeline-step"><div class="stem"><div class="node"></div></div><div class="label">Estimate</div></div>
+                <div class="pipeline-step"><div class="stem"><div class="node"></div></div><div class="label">Export</div></div>
+                <div class="pipeline-step"><div class="stem"><div class="node"></div></div><div class="label">Send</div></div>
+            </div>
+        </div>
+
         <div class="rail-footer">
             <div class="user-chip">
                 <div class="user-dot"></div>
@@ -535,16 +873,16 @@
             <a href="/logout/" class="logout-link">Log out</a>
         </div>
     </aside>
- 
+
     <main class="main">
- 
+
         <!-- RFPs Panel -->
         <div id="rfps" class="panel active">
             <div class="page-head">
                 <div class="page-eyebrow">Stage 01 — Intake</div>
                 <div class="page-title">Requests for Proposal</div>
             </div>
- 
+
             <div class="card">
                 <div class="card-title">Upload new RFP</div>
                 <form id="uploadForm" class="upload-box">
@@ -554,7 +892,7 @@
                 </form>
                 <div id="uploadMsg" class="msg-box"></div>
             </div>
- 
+
             <div class="card">
                 <div class="card-title">All RFPs</div>
                 <div class="toolbar">
@@ -579,44 +917,177 @@
                 </table>
             </div>
         </div>
- 
-        <!-- Proposals Panel -->
-        <div id="proposals" class="panel">
-            <div class="page-head">
-                <div class="page-eyebrow">Stage 02–05 — Generate · Estimate · Export · Send</div>
-                <div class="page-title">Proposals</div>
+    <!-- Proposals Panel -->
+    <div id="proposals" class="panel">
+
+        <div class="page-head">
+
+            <div class="page-eyebrow">
+                Stage 02–05 — Generate · Estimate · Export · Send
             </div>
- 
-            <div class="card">
-                <div class="card-title">All Proposals</div>
-                <div class="toolbar">
-                    <input type="text" id="proposalSearch" class="search-input" placeholder="Search by title…">
-                    <select id="proposalStatusFilter">
-                        <option value="">All statuses</option>
-                        <option value="draft">Draft</option>
-                        <option value="generated">Generated</option>
-                        <option value="sent_for_review">Sent for review</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
-                <table id="proposalTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th><th>Title</th><th>Cost</th><th>Timeline</th><th>Status</th><th>PDF</th><th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="proposalTableBody">
-                        <tr><td colspan="7" class="loading">Loading proposals…</td></tr>
-                    </tbody>
-                </table>
+
+            <div class="page-title">
+                Proposals
             </div>
+
         </div>
- 
-    </main>
-</div>
- 
+
+
+        <div class="card">
+
+            <div class="card-title">
+                All Proposals
+            </div>
+
+
+            <div class="toolbar">
+
+                <input
+                    type="text"
+                    id="proposalSearch"
+                    class="search-input"
+                    placeholder="Search by title…"
+                >
+
+                <select id="proposalStatusFilter">
+
+                    <option value="">
+                        All statuses
+                    </option>
+
+                    <option value="draft">
+                        Draft
+                    </option>
+
+                    <option value="generated">
+                        Generated
+                    </option>
+
+                    <option value="sent_for_review">
+                        Sent for review
+                    </option>
+
+                    <option value="approved">
+                        Approved
+                    </option>
+
+                    <option value="rejected">
+                        Rejected
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <table id="proposalTable">
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Cost</th>
+                        <th>Timeline</th>
+                        <th>Status</th>
+                        <th>PDF</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="proposalTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="loading"
+                        >
+                            Loading proposals…
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- Requirements Modal -->
+    <div
+        id="requirementsModal"
+        class="requirements-modal"
+    >
+
+        <div class="requirements-modal-content">
+
+
+            <!-- Modal Header -->
+            <div class="requirements-modal-header">
+
+                <div>
+
+                    <h2>
+                        RFP Requirements
+                    </h2>
+
+                    <span id="requirementsRfpTitle"></span>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="requirements-close"
+                    onclick="closeRequirementsModal()"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <!-- Requirements Content -->
+            <div
+                id="requirementsContent"
+                class="requirements-content"
+            >
+
+                <!-- JavaScript will insert requirements here -->
+
+            </div>
+
+
+            <!-- Modal Footer -->
+            <div class="requirements-modal-footer">
+
+                <button
+                    type="button"
+                    class="requirements-close-btn"
+                    onclick="closeRequirementsModal()"
+                >
+                    Close
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
 <script>
+
 // ---------------- CSRF helper ----------------
 function getCookie(name) {
     let cookieValue = null;
@@ -633,11 +1104,12 @@ function getCookie(name) {
     return cookieValue;
 }
 const CSRF_TOKEN = getCookie('csrftoken');
- 
+
 const API = {
     rfps: '/api/rfp/rfps/',
     rfpDetail: id => `/api/rfp/rfps/${id}/`,
     analyze: id => `/api/rfp/rfps/${id}/analyze/`,
+    requirements: id => `/api/rfp/rfps/${id}/requirements/`,
     generate: '/api/proposals/generate/',
     proposals: '/api/proposals/proposals/',
     proposalDetail: id => `/api/proposals/proposals/${id}/`,
@@ -646,10 +1118,10 @@ const API = {
     sendReview: id => `/api/proposals/proposals/${id}/send-for-review/`,
     sendToClient: id => `/api/proposals/proposals/${id}/send-to-client/`,
 };
- 
+
 let allRfps = [];
 let allProposals = [];
- 
+
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -657,7 +1129,7 @@ function switchTab(tab) {
     event.target.closest('.tab-btn').classList.add('active');
     if (tab === 'proposals') loadProposals();
 }
- 
+
 function showMsg(elId, text, type) {
     const el = document.getElementById(elId);
     el.innerHTML = type === 'loading' ? `<span class="spinner"></span> ${text}` : text;
@@ -666,11 +1138,11 @@ function showMsg(elId, text, type) {
         setTimeout(() => el.classList.remove('show'), 6000);
     }
 }
- 
+
 function hideMsg(elId) {
     document.getElementById(elId).classList.remove('show');
 }
- 
+
 function statusBadge(status) {
     return `<span class="status-badge status-${status}">${status.replace(/_/g, ' ')}</span>`;
 }
@@ -680,7 +1152,7 @@ function setButtonLoading(btn, loadingText) {
     btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
     btn.disabled = true;
 }
- 
+
 // ---------------- RFPs ----------------
 async function loadRfps() {
     const res = await fetch(API.rfps);
@@ -688,17 +1160,17 @@ async function loadRfps() {
     allRfps = data.results || data;
     renderRfps();
 }
- 
+
 function renderRfps() {
     const searchTerm = document.getElementById('rfpSearch').value.toLowerCase();
     const statusFilter = document.getElementById('rfpStatusFilter').value;
- 
+
     let filtered = allRfps.filter(rfp => {
         const matchesSearch = (rfp.title || '').toLowerCase().includes(searchTerm);
         const matchesStatus = !statusFilter || rfp.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
- 
+
     const rows = filtered.map(rfp => `
         <tr>
             <td>#${rfp.id}</td>
@@ -706,33 +1178,35 @@ function renderRfps() {
             <td>${statusBadge(rfp.status)}</td>
             <td>${new Date(rfp.uploaded_at).toLocaleString()}</td>
             <td class="actions-cell">
-                ${rfp.status === 'extracted' || rfp.status === 'analyzed'
+                ${rfp.status === 'extracted'
                     ? `<button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Analyze</button>` : ''}
                 ${rfp.status === 'analyzed'
-                    ? `<button class="action-btn" onclick="generateProposal(${rfp.id}, this)">Generate proposal</button>` : ''}
-                <button class="action-btn delete-btn" onclick="deleteRfp(${rfp.id}, this)">Delete</button>
+        ? `<button class="action-btn primary" onclick="generateProposal(${rfp.id}, this)">Generate proposal</button>
+        <button class="action-btn" onclick="viewRequirements(${rfp.id})">View Requirements</button>
+        <button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Re-analyze</button>` : ''}
+        <button class="action-btn delete-btn" onclick="deleteRfp(${rfp.id}, this)">Delete</button>  
             </td>
         </tr>
     `).join('');
     document.getElementById('rfpTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="5">No RFPs match your search or filter.</td></tr>';
 }
- 
+
 document.getElementById('rfpSearch').addEventListener('input', renderRfps);
 document.getElementById('rfpStatusFilter').addEventListener('change', renderRfps);
- 
+
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = document.getElementById('rfpTitle').value;
     const file = document.getElementById('rfpFile').files[0];
     const uploadBtn = document.getElementById('uploadBtn');
- 
+
     const formData = new FormData();
     formData.append('title', title);
     formData.append('file', file);
- 
+
     setButtonLoading(uploadBtn, 'Uploading…');
     showMsg('uploadMsg', 'Uploading and extracting text from file…', 'loading');
- 
+
     try {
         const res = await fetch(API.rfps, {
             method: 'POST',
@@ -754,7 +1228,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         uploadBtn.disabled = false;
     }
 });
- 
+
 async function analyzeRfp(id, btn) {
     setButtonLoading(btn, 'Analyzing…');
     showMsg('uploadMsg', 'Analyzing RFP with AI…', 'loading');
@@ -773,7 +1247,115 @@ async function analyzeRfp(id, btn) {
         loadRfps();
     }
 }
- 
+
+async function viewRequirements(id) {
+
+    const modal = document.getElementById("requirementsModal");
+    const content = document.getElementById("requirementsContent");
+    const title = document.getElementById("requirementsRfpTitle");
+
+    modal.style.display = "flex";
+    content.innerHTML = "<p>Loading requirements...</p>";
+
+    try {
+
+        const res = await fetch(API.requirements(id));
+        const data = await res.json();
+
+        if (!res.ok) {
+            content.innerHTML = `
+                <p style="color: red;">
+                    ${data.error || "Could not load requirements."}
+                </p>
+            `;
+            return;
+        }
+
+        title.textContent = data.title || `RFP #${id}`;
+
+        const requirements = data.requirements;
+
+        if (!requirements) {
+            content.innerHTML = `
+                <p>No requirements found for this RFP.</p>
+            `;
+            return;
+        }
+
+        content.innerHTML = formatRequirements(requirements);
+
+    } catch (err) {
+
+        content.innerHTML = `
+            <p style="color: red;">
+                Error loading requirements: ${err.message}
+            </p>
+        `;
+    }
+}
+
+
+function formatRequirements(requirements) {
+
+    let html = "";
+
+    for (const [key, value] of Object.entries(requirements)) {
+
+        const heading = key
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, char => char.toUpperCase());
+
+        html += `
+            <div class="requirement-item">
+                <h3>${heading}</h3>
+                ${formatRequirementValue(value)}
+            </div>
+        `;
+    }
+
+    return html;
+}
+
+
+function formatRequirementValue(value) {
+
+    if (value === null || value === undefined) {
+        return `<p>Not specified</p>`;
+    }
+
+    if (Array.isArray(value)) {
+
+        if (value.length === 0) {
+            return `<p>None specified</p>`;
+        }
+
+        return `
+            <ul>
+                ${value.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+        `;
+    }
+
+    if (typeof value === "object") {
+
+        return `
+            <div class="nested-requirements">
+                ${formatRequirements(value)}
+            </div>
+        `;
+    }
+
+    return `<p>${value}</p>`;
+}
+
+
+function closeRequirementsModal() {
+
+    const modal = document.getElementById("requirementsModal");
+
+    modal.style.display = "none";
+}
+
 async function generateProposal(rfpId, btn) {
     setButtonLoading(btn, 'Generating…');
     showMsg('uploadMsg', 'Generating proposal… this may take 10–20 seconds.', 'loading');
@@ -796,7 +1378,7 @@ async function generateProposal(rfpId, btn) {
         loadRfps();
     }
 }
- 
+
 async function deleteRfp(id, btn) {
     if (!confirm('Delete this RFP? This cannot be undone.')) return;
     setButtonLoading(btn, 'Deleting…');
@@ -814,7 +1396,7 @@ async function deleteRfp(id, btn) {
         loadRfps();
     }
 }
- 
+
 // ---------------- Proposals ----------------
 async function loadProposals() {
     const res = await fetch(API.proposals);
@@ -822,17 +1404,17 @@ async function loadProposals() {
     allProposals = data.results || data;
     renderProposals();
 }
- 
+
 function renderProposals() {
     const searchTerm = document.getElementById('proposalSearch').value.toLowerCase();
     const statusFilter = document.getElementById('proposalStatusFilter').value;
- 
+
     let filtered = allProposals.filter(p => {
         const matchesSearch = (p.title || '').toLowerCase().includes(searchTerm);
         const matchesStatus = !statusFilter || p.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
- 
+
     const rows = filtered.map(p => `
         <tr>
             <td>#${p.id}</td>
@@ -842,8 +1424,8 @@ function renderProposals() {
             <td>${statusBadge(p.status)}</td>
             <td>${p.generated_pdf ? `<a class="pdf-link" href="${p.generated_pdf}" target="_blank">View PDF</a>` : '—'}</td>
             <td class="actions-cell">
-                ${!p.estimated_cost ? `<button class="action-btn" onclick="estimateProposal(${p.id}, this)">Estimate</button>` : ''}
-                ${p.estimated_cost && !p.generated_pdf ? `<button class="action-btn" onclick="exportPdf(${p.id}, this)">Export PDF</button>` : ''}
+                ${!p.estimated_cost ? `<button class="action-btn primary" onclick="estimateProposal(${p.id}, this)">Estimate</button>` : ''}
+                ${p.estimated_cost && !p.generated_pdf ? `<button class="action-btn primary" onclick="exportPdf(${p.id}, this)">Export PDF</button>` : ''}
                 ${p.generated_pdf && p.status !== 'sent_for_review' ? `<button class="action-btn" onclick="sendReview(${p.id}, this)">Send for review</button>` : ''}
                 ${p.generated_pdf ? `<button class="action-btn" onclick="sendToClient(${p.id}, this)">Send to client</button>` : ''}
                 <button class="action-btn delete-btn" onclick="deleteProposal(${p.id}, this)">Delete</button>
@@ -852,10 +1434,10 @@ function renderProposals() {
     `).join('');
     document.getElementById('proposalTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="7">No proposals match your search or filter.</td></tr>';
 }
- 
+
 document.getElementById('proposalSearch').addEventListener('input', renderProposals);
 document.getElementById('proposalStatusFilter').addEventListener('change', renderProposals);
- 
+
 async function estimateProposal(id, btn) {
     setButtonLoading(btn, 'Estimating…');
     try {
@@ -869,7 +1451,7 @@ async function estimateProposal(id, btn) {
         loadProposals();
     }
 }
- 
+
 async function exportPdf(id, btn) {
     setButtonLoading(btn, 'Exporting…');
     try {
@@ -883,7 +1465,7 @@ async function exportPdf(id, btn) {
         loadProposals();
     }
 }
- 
+
 async function sendReview(id, btn) {
     setButtonLoading(btn, 'Sending…');
     try {
@@ -901,11 +1483,11 @@ async function sendReview(id, btn) {
         loadProposals();
     }
 }
- 
+
 async function sendToClient(id, btn) {
     const clientEmail = prompt("Enter client's email address:");
     if (!clientEmail) return;
- 
+
     setButtonLoading(btn, 'Sending…');
     try {
         const res = await fetch(API.sendToClient(id), {
@@ -926,7 +1508,7 @@ async function sendToClient(id, btn) {
         loadProposals();
     }
 }
- 
+
 async function deleteProposal(id, btn) {
     if (!confirm('Delete this proposal? This cannot be undone.')) return;
     setButtonLoading(btn, 'Deleting…');
@@ -940,16 +1522,12 @@ async function deleteProposal(id, btn) {
         }
     } finally {
         loadProposals();
-
     }
 }
- 
+
 // Init
 loadRfps();
 </script>
- 
+
 </body>
 </html>
-
-
-

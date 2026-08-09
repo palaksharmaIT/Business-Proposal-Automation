@@ -22,9 +22,11 @@ class RFPViewSet(viewsets.ModelViewSet):
             rfp_instance.extracted_text = extracted
             rfp_instance.status = 'extracted'
             rfp_instance.save()
+
         except Exception as e:
             rfp_instance.status = 'failed'
             rfp_instance.save()
+
             return Response(
                 {
                     "message": "RFP uploaded but text extraction failed.",
@@ -46,26 +48,38 @@ class RFPViewSet(viewsets.ModelViewSet):
     def analyze(self, request, pk=None):
         """
         POST /api/rfp/rfps/{id}/analyze/
+
         Runs Gemini requirement extraction on this RFP's extracted_text.
         """
+
         rfp_instance = self.get_object()
 
         if not rfp_instance.extracted_text:
             return Response(
-                {"error": "No extracted text available for this RFP. Upload/extract first."},
+                {
+                    "error": "No extracted text available for this RFP. "
+                             "Upload/extract first."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
-            requirements = extract_requirements_with_ai(rfp_instance.extracted_text)
+            requirements = extract_requirements_with_ai(
+                rfp_instance.extracted_text
+            )
+
             rfp_instance.extracted_requirements = requirements
             rfp_instance.status = 'analyzed'
             rfp_instance.save()
+
         except Exception as e:
             rfp_instance.status = 'failed'
             rfp_instance.save()
+
             return Response(
-                {"error": f"AI analysis failed: {str(e)}"},
+                {
+                    "error": f"AI analysis failed: {str(e)}"
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -77,5 +91,29 @@ class RFPViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @action(detail=True, methods=['get'], url_path='requirements')
+    def requirements(self, request, pk=None):
+        """
+        GET /api/rfp/rfps/{id}/requirements/
 
-    
+        Returns the AI-extracted requirements for this RFP.
+        """
+
+        rfp_instance = self.get_object()
+
+        if not rfp_instance.extracted_requirements:
+            return Response(
+                {
+                    "error": "No requirements have been extracted yet."
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return Response(
+            {
+                "rfp_id": rfp_instance.id,
+                "title": rfp_instance.title,
+                "requirements": rfp_instance.extracted_requirements,
+            },
+            status=status.HTTP_200_OK,
+        )
