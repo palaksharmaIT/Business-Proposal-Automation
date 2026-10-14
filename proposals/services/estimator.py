@@ -64,9 +64,12 @@ def _get_per_feature_estimates(rfp_requirements: dict) -> list:
     features = rfp_requirements.get("required_features", []) or ["General project setup"]
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-flash-latest",
+        model="gemini-flash-lite-latest",
         google_api_key=settings.GOOGLE_API_KEY,
         temperature=0.2,
+        transport="rest",
+        timeout=60,
+        max_retries=1,
     )
     prompt = ChatPromptTemplate.from_template(COST_ESTIMATION_PROMPT)
     chain = prompt | llm

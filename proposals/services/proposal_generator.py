@@ -76,9 +76,12 @@ def generate_proposal_content(rfp_requirements: dict, top_k: int = 3) -> dict:
     ]
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-flash-latest",
+        model="gemini-flash-lite-latest",
         google_api_key=settings.GOOGLE_API_KEY,
         temperature=0.4,
+        transport="rest",
+        timeout=90,
+        max_retries=1,
     )
 
     prompt = ChatPromptTemplate.from_template(PROPOSAL_PROMPT)
