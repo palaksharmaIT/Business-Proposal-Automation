@@ -1,9 +1,12 @@
-cat > .gitignore << 'EOF'
+# Generated static files
+staticfiles/
+
+# Generated PDFs and uploaded files
+media/generated_pdfs/
+media/rfp_uploads/
+
+# Environment
+.env
 venv/
 __pycache__/
-*.pyc
-.env
-media/
-db.sqlite3
-*.log
-EOF
+*.py[cod]
