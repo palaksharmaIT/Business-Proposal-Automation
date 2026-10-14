@@ -5,25 +5,31 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from knowledge_base.services.vector_store import search_similar_projects
 
-# ---- Predefined base pricing rules (per feature complexity) ----
-FEATURE_RATE_CARD = {
-    "simple": 800,      # e.g. static pages, basic forms
-    "moderate": 1800,    # e.g. auth, catalog, dashboards
-    "complex": 3500,     # e.g. payment integration, real-time tracking, ERP modules
-}
+BASE_PROJECT_COST = 1500   # planning/PM overhead, kept minimal & fixed
+BASE_TIMELINE_WEEKS = 1
 
-BASE_PROJECT_COST = 2000  # covers planning, PM overhead, deployment setup
-BASE_TIMELINE_WEEKS = 1   # baseline setup/planning week
+COST_ESTIMATION_PROMPT = """You are a senior technical project estimator at a software development agency. 
+Given the full project context below, estimate a REALISTIC cost (in USD) and timeline (in weeks) for EACH required feature — considering the project type, its overall scale, and industry-standard software development rates.
 
-COMPLEXITY_PROMPT = """You are a technical project estimator. Given this list of required features/requirements, classify EACH feature into one of these complexity levels: "simple", "moderate", or "complex".
+PROJECT TYPE: {project_type}
+PROJECT SUMMARY: {summary}
+CLIENT-MENTIONED BUDGET (for reference/sanity-check only): {budget_range}
+CLIENT-MENTIONED TIMELINE (for reference only): {timeline}
 
-FEATURES:
+REQUIRED FEATURES:
 {features}
 
-Return ONLY a valid JSON object (no markdown, no extra text) mapping each feature (exact text as given) to its complexity level. Example format:
+Guidelines:
+- Estimate each feature's cost based on ACTUAL implementation effort for THIS SPECIFIC project type, not a generic flat rate.
+- A "payment gateway" for a simple e-commerce site costs less than a "payment gateway" with multi-currency, subscriptions, and fraud detection for an enterprise platform — infer the right scope from the project summary.
+- Larger/more complex overall projects (e.g. ERP, enterprise systems) should have proportionally higher per-feature costs than small websites or MVPs.
+- Costs should be in whole USD dollars, timeline in weeks (can be fractional, e.g. 1.5).
+
+Return ONLY a valid JSON object (no markdown, no extra text) in this exact format:
 {{
-  "User authentication": "moderate",
-  "Payment gateway": "complex"
+  "features": [
+    {{"name": "exact feature name as given", "cost_usd": 1234, "weeks": 1.5, "reasoning": "one short phrase why"}}
+  ]
 }}"""
 
 
@@ -47,36 +53,40 @@ def _clean_json_output(raw_output: str) -> str:
         raw_output = raw_output.strip("`")
         if raw_output.lower().startswith("json"):
             raw_output = raw_output[4:].strip()
-            
     return raw_output
 
 
-def _classify_feature_complexity(features: list) -> dict:
+def _get_per_feature_estimates(rfp_requirements: dict) -> list:
     """
-    Uses Gemini to classify each feature as simple/moderate/complex.
-    Falls back to 'moderate' for any feature it fails to classify.
+    Asks Gemini to estimate cost/timeline per feature, grounded in the
+    specific project's type and scale — not a flat generic rate.
     """
+    features = rfp_requirements.get("required_features", []) or ["General project setup"]
+
     llm = ChatGoogleGenerativeAI(
         model="gemini-flash-latest",
         google_api_key=settings.GOOGLE_API_KEY,
-        temperature=0.1,
+        temperature=0.2,
     )
-    prompt = ChatPromptTemplate.from_template(COMPLEXITY_PROMPT)
+    prompt = ChatPromptTemplate.from_template(COST_ESTIMATION_PROMPT)
     chain = prompt | llm
 
-    response = chain.invoke({"features": json.dumps(features)})
+    response = chain.invoke({
+        "project_type": rfp_requirements.get("project_type", "Software Project"),
+        "summary": rfp_requirements.get("summary", ""),
+        "budget_range": rfp_requirements.get("budget_range", "Not specified"),
+        "timeline": rfp_requirements.get("timeline", "Not specified"),
+        "features": json.dumps(features),
+    })
+
     raw_output = _clean_json_output(_extract_text_from_response(response))
 
     try:
-        classification = json.loads(raw_output)
+        parsed = json.loads(raw_output)
+        return parsed.get("features", [])
     except json.JSONDecodeError:
-        classification = {}
-
-    # Ensure every feature has a value, default to 'moderate'
-    result = {}
-    for f in features:
-        result[f] = classification.get(f, "moderate")
-    return result
+        # Fallback: flat moderate estimate per feature if AI output is malformed
+        return [{"name": f, "cost_usd": 1800, "weeks": 1, "reasoning": "fallback estimate"} for f in features]
 
 
 def _get_historical_reference(rfp_requirements: dict):
@@ -89,8 +99,7 @@ def _get_historical_reference(rfp_requirements: dict):
     except FileNotFoundError:
         return None, None
 
-    costs = []
-    durations = []
+    costs, durations = [], []
     for p in similar:
         meta = p.get("metadata", {})
         if meta.get("actual_cost"):
@@ -108,42 +117,29 @@ def _get_historical_reference(rfp_requirements: dict):
 
 def estimate_cost_and_timeline(rfp_requirements: dict) -> dict:
     """
-    Returns a dict:
-    {
-        "estimated_cost": float,
-        "cost_breakdown": {...},
-        "estimated_timeline_weeks": int,
-        "timeline_breakdown": {...}
-    }
+    Returns project-specific cost & timeline estimates, grounded in:
+    1. AI's per-feature estimate based on THIS project's type/scale
+    2. Blended with historical actuals from similar past projects
     """
-    features = rfp_requirements.get("required_features", []) or []
+    feature_estimates = _get_per_feature_estimates(rfp_requirements)
 
-    if not features:
-        features = ["General project setup"]
-
-    complexity_map = _classify_feature_complexity(features)
-
-    # ---- Cost calculation ----
     cost_breakdown = {"base_setup_and_planning": BASE_PROJECT_COST}
-    total_cost = BASE_PROJECT_COST
-
-    for feature, level in complexity_map.items():
-        rate = FEATURE_RATE_CARD.get(level, FEATURE_RATE_CARD["moderate"])
-        cost_breakdown[feature] = rate
-        total_cost += rate
-
-    # ---- Timeline calculation ----
-    # Rough rule: simple = 0.5 week, moderate = 1 week, complex = 2 weeks of dev effort
-    TIMELINE_WEIGHTS = {"simple": 0.5, "moderate": 1, "complex": 2}
     timeline_breakdown = {"planning_and_design": BASE_TIMELINE_WEEKS}
+
+    total_cost = BASE_PROJECT_COST
     total_weeks = BASE_TIMELINE_WEEKS
 
-    for feature, level in complexity_map.items():
-        weeks = TIMELINE_WEIGHTS.get(level, 1)
-        timeline_breakdown[feature] = weeks
+    for item in feature_estimates:
+        name = item.get("name", "Feature")
+        cost = float(item.get("cost_usd", 1800))
+        weeks = float(item.get("weeks", 1))
+
+        cost_breakdown[name] = round(cost, 2)
+        timeline_breakdown[name] = weeks
+
+        total_cost += cost
         total_weeks += weeks
 
-    # Add fixed QA + deployment buffer
     timeline_breakdown["testing_and_deployment"] = 1
     total_weeks += 1
 
@@ -151,15 +147,14 @@ def estimate_cost_and_timeline(rfp_requirements: dict) -> dict:
     avg_hist_cost, avg_hist_duration = _get_historical_reference(rfp_requirements)
 
     if avg_hist_cost:
-        # Weighted average: 60% rule-based calc, 40% historical average
-        total_cost = round((total_cost * 0.6) + (avg_hist_cost * 0.4), 2)
+        total_cost = round((total_cost * 0.65) + (avg_hist_cost * 0.35), 2)
 
     if avg_hist_duration:
-        total_weeks = round((total_weeks * 0.6) + (avg_hist_duration * 0.4))
+        total_weeks = round((total_weeks * 0.65) + (avg_hist_duration * 0.35))
 
     return {
         "estimated_cost": round(total_cost, 2),
-        "cost_breakdown": {k: round(v, 2) if isinstance(v, (int, float)) else v for k, v in cost_breakdown.items()},
+        "cost_breakdown": cost_breakdown,
         "estimated_timeline_weeks": round(total_weeks),
         "timeline_breakdown": timeline_breakdown,
     }

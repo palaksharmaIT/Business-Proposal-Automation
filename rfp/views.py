@@ -117,3 +117,41 @@ class RFPViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
+    @action(detail=True, methods=['patch'], url_path='requirements/update')
+    
+    def update_requirements(self, request, pk=None):
+        """
+        PATCH /api/rfp/rfps/{id}/requirements/update/
+
+        Updates the AI-extracted requirements for this RFP.
+        """
+
+        rfp_instance = self.get_object()
+
+        if not rfp_instance.extracted_requirements:
+            return Response(
+                {
+                    "error": "No requirements have been extracted yet."
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        updated_requirements = request.data.get('requirements')
+        if not updated_requirements:
+            return Response(
+                {
+                    "error": "Missing 'requirements' field in request body."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        rfp_instance.extracted_requirements = updated_requirements
+        rfp_instance.save()
+
+        return Response(
+            {
+                "message": "Requirements updated successfully.",
+                "rfp": RFPSerializer(rfp_instance).data,
+            },
+            status=status.HTTP_200_OK,
+        )

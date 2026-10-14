@@ -1,71 +1,551 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Login — AI Proposal Assistant</title>
-<style>
-    * { box-sizing: border-box; }
-    body {
-        font-family: 'Segoe UI', Arial, sans-serif;
-        background: #2c3e50;
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .login-box {
-        background: white;
-        padding: 40px 35px;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        width: 340px;
-    }
-    .login-box h1 {
-        font-size: 18px;
-        color: #2c3e50;
-        text-align: center;
-        margin-bottom: 25px;
-    }
-    .login-box input {
-        width: 100%;
-        padding: 10px 12px;
-        margin-bottom: 14px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 14px;
-    }
-    .login-box button {
-        width: 100%;
-        padding: 11px;
-        background: #2c3e50;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-    .login-box button:hover { background: #34495e; }
-    .error-msg {
-        color: #e74c3c;
-        font-size: 13px;
-        margin-bottom: 14px;
-        text-align: center;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — AI Proposal Assistant</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #F7F4EE;
+            --surface: #FFFEFA;
+            --surface-soft: #F0EBE2;
+            --border: #DDD4C8;
+            --text: #302C28;
+            --text-muted: #756B61;
+            --accent: #B45138;
+            --accent-hover: #963D29;
+            --accent-light: #F4E4DC;
+            --success: #47775D;
+            --danger: #B94C42;
+            --font-body: 'Inter', sans-serif;
+            --font-display: 'Newsreader', Georgia, serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(ellipse at 10% 10%, rgba(180, 81, 56, 0.07), transparent 35%),
+                radial-gradient(ellipse at 90% 90%, rgba(173, 120, 56, 0.08), transparent 35%),
+                var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .auth-layout {
+            width: 100%;
+            max-width: 980px;
+            min-height: 590px;
+            display: grid;
+            grid-template-columns: 1fr 0.9fr;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(67, 49, 35, 0.09);
+        }
+
+        .brand-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 42px;
+            overflow: hidden;
+            background: #EFE6DA;
+            border-right: 1px solid var(--border);
+        }
+
+        .brand-panel::before {
+            content: "";
+            position: absolute;
+            width: 330px;
+            height: 330px;
+            right: -130px;
+            bottom: -100px;
+            border: 1px solid rgba(180, 81, 56, 0.2);
+            border-radius: 50%;
+            box-shadow:
+                0 0 0 35px rgba(180, 81, 56, 0.035),
+                0 0 0 70px rgba(180, 81, 56, 0.025);
+        }
+
+        .brand-top,
+        .brand-content,
+        .brand-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            border-radius: 13px;
+            background: var(--accent);
+            color: white;
+            font-family: var(--font-display);
+            font-size: 25px;
+            box-shadow: 0 5px 14px rgba(180, 81, 56, 0.2);
+        }
+
+        .brand-name {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+        }
+
+        .brand-caption {
+            margin-top: 4px;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.7px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 20px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .brand-content h2 {
+            max-width: 380px;
+            margin: 0 0 18px;
+            font-family: var(--font-display);
+            font-size: clamp(38px, 4.5vw, 54px);
+            font-weight: 400;
+            letter-spacing: -1.7px;
+            line-height: 1.08;
+        }
+
+        .brand-content h2 em {
+            color: var(--accent);
+            font-weight: 400;
+        }
+
+        .brand-content p {
+            max-width: 330px;
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .feature-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #50473E;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(180, 81, 56, 0.2);
+            border-radius: 9px;
+            background: rgba(255, 254, 250, 0.65);
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .brand-footer {
+            color: #87796C;
+            font-size: 10px;
+            letter-spacing: 0.2px;
+        }
+
+        .form-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 46px 42px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .mobile-brand {
+            display: none;
+        }
+
+        .form-heading {
+            margin-bottom: 30px;
+        }
+
+        .form-heading h1 {
+            margin: 0 0 9px;
+            font-family: var(--font-display);
+            font-size: 37px;
+            font-weight: 500;
+            letter-spacing: -1px;
+        }
+
+        .form-heading p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #51483F;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .field input {
+            width: 100%;
+            height: 47px;
+            padding: 0 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            outline: none;
+            background: #FFFDF9;
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input::placeholder {
+            color: #A49A8F;
+        }
+
+        .field input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(180, 81, 56, 0.09);
+        }
+
+        .password-input {
+            padding-right: 66px !important;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            border: 0;
+            padding: 5px;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent);
+        }
+
+        .error-msg {
+            margin-bottom: 20px;
+            padding: 12px 14px;
+            border: 1px solid #E9C7C0;
+            border-radius: 9px;
+            background: #FBEEEA;
+            color: var(--danger);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            min-height: 48px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid var(--accent);
+            border-radius: 9px;
+            background: var(--accent);
+            color: white;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            background: var(--accent-hover);
+            box-shadow: 0 6px 18px rgba(180, 81, 56, 0.18);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .button-arrow {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .register-link {
+            margin-top: 25px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .register-link a {
+            margin-left: 3px;
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .form-note {
+            margin-top: 35px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            color: #95897D;
+            font-size: 10px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 18px;
+            }
+
+            .auth-layout {
+                max-width: 440px;
+                min-height: auto;
+                grid-template-columns: 1fr;
+                border-radius: 18px;
+            }
+
+            .brand-panel {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 34px 28px;
+            }
+
+            .mobile-brand {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                margin-bottom: 34px;
+            }
+
+            .form-heading h1 {
+                font-size: 34px;
+            }
+
+            .form-note {
+                margin-top: 28px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .form-panel {
+                padding: 28px 20px;
+            }
+
+            .form-heading h1 {
+                font-size: 30px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <div class="login-box">
-        <h1>🧠 AI Proposal Assistant</h1>
-        {% if error %}
-            <div class="error-msg">{{ error }}</div>
-        {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
-    </div>
+    <main class="auth-layout">
+
+        <section class="brand-panel">
+            <div class="brand-top">
+                <div class="brand-mark">P.</div>
+                <div>
+                    <div class="brand-name">AI Proposal Assistant</div>
+                    <div class="brand-caption">Intelligent proposal workspace</div>
+                </div>
+            </div>
+
+            <div class="brand-content">
+                <div class="eyebrow">Your workspace, reimagined</div>
+                <h2>Turn great ideas into <em>winning proposals.</em></h2>
+                <p>
+                    Bring your requirements, research, and ideas together.
+                    Create professional proposals with a smarter workflow.
+                </p>
+
+                <div class="feature-list">
+                    <div class="feature">
+                        <span class="feature-icon">✳</span>
+                        AI-assisted proposal generation
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">↗</span>
+                        Organized requirements and projects
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✓</span>
+                        One workspace for your workflow
+                    </div>
+                </div>
+            </div>
+
+            <div class="brand-footer">
+                Thoughtfully designed for better work.
+            </div>
+        </section>
+
+        <section class="form-panel">
+            <div class="login-box">
+
+                <div class="mobile-brand">
+                    <div class="brand-mark">P.</div>
+                    <div>
+                        <div class="brand-name">AI Proposal Assistant</div>
+                        <div class="brand-caption">Intelligent proposal workspace</div>
+                    </div>
+                </div>
+
+                <div class="form-heading">
+                    <div class="eyebrow">Welcome back</div>
+                    <h1>Sign in.</h1>
+                    <p>Pick up where you left off. Your workspace is waiting.</p>
+                </div>
+
+                {% if error %}
+                    <div class="error-msg" role="alert">{{ error }}</div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="field">
+                        <label for="username">Username</label>
+                        <input
+                            id="username"
+                            type="text"
+                            name="username"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                            autofocus
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <div class="input-wrap">
+                            <input
+                                id="password"
+                                class="password-input"
+                                type="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button
+                                class="toggle-password"
+                                type="button"
+                                onclick="togglePassword('password', this)"
+                                aria-label="Show password"
+                            >Show</button>
+                        </div>
+                    </div>
+
+                    <button class="submit-btn" type="submit">
+                        Sign in to workspace
+                        <span class="button-arrow">→</span>
+                    </button>
+                </form>
+
+                <div class="register-link">
+                    New to the workspace?
+                    <a href="{% url 'register' %}">Create an account</a>
+                </div>
+
+                <div class="form-note">
+                    AI Proposal Assistant · Your ideas, organized.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const showing = input.type === "text";
+
+            input.type = showing ? "password" : "text";
+            button.textContent = showing ? "Show" : "Hide";
+            button.setAttribute(
+                "aria-label",
+                showing ? "Show password" : "Hide password"
+            );
+        }
+    </script>
 </body>
 </html>

@@ -1,854 +1,1112 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Proposal Assistant — Dashboard</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
-    :root {
-        --bg: #0B0D12;
-        --panel: #15181F;
-        --panel-raised: #1E2230;
-        --panel-raised-hover: #262B3C;
-        --border: #363C4E;
-        --border-soft: #262B38;
-        --text: #F5F6FA;
-        --text-dim: #C6CADA;
-        --text-faint: #9CA1B5;
-        --violet: #8B7FF5;
-        --cyan: #5FDCF0;
-        --amber: #F0B04E;
-        --emerald: #4FE3A8;
-        --rose: #FF8888;
-        --gradient: linear-gradient(90deg, var(--violet), var(--cyan));
-        --font-display: 'Space Grotesk', sans-serif;
-        --font-body: 'Inter', sans-serif;
-        --font-mono: 'JetBrains Mono', monospace;
-    }
+:root {
+    --bg: #F7F4EE;
+    --panel: #FFFEFA;
+    --panel-raised: #F1EDE5;
+    --panel-raised-hover: #E9E1D6;
+    --border: #DDD4C8;
+    --border-soft: #EAE4DA;
+    --text: #302C28;
+    --text-dim: #625A52;
+    --text-faint: #8D8277;
+    --violet: #B45138;
+    --cyan: #A45A43;
+    --amber: #AD7838;
+    --emerald: #47775D;
+    --rose: #B94C42;
+    --gradient: linear-gradient(135deg, #B45138, #D17C5C);
+    --font-display: 'Newsreader', Georgia, serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
 
-    * { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
-    body {
-        font-family: var(--font-body);
-        background:
-            radial-gradient(ellipse 900px 500px at 15% -10%, rgba(139,127,245,0.12), transparent),
-            radial-gradient(ellipse 700px 400px at 100% 0%, rgba(95,220,240,0.07), transparent),
-            var(--bg);
-        margin: 0;
-        color: var(--text);
-        min-height: 100vh;
-    }
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+}
 
-    ::selection { background: rgba(139,127,245,0.35); }
+::selection {
+    background: rgba(180, 81, 56, 0.18);
+}
 
-    /* ---------------- Shell layout ---------------- */
-    .shell {
-        display: flex;
-        min-height: 100vh;
-    }
+/* Layout */
 
-    /* ---------------- Rail (sidebar) ---------------- */
-    .rail {
-        width: 236px;
-        flex-shrink: 0;
-        border-right: 1px solid var(--border-soft);
-        padding: 22px 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 28px;
-    }
+.shell {
+    display: flex;
+    min-height: 100vh;
+}
 
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0 6px;
-    }
+.rail {
+    width: 236px;
+    flex-shrink: 0;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    background: #F1EDE5;
+    border-right: 1px solid var(--border);
+}
 
-    .brand-mark {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        background: var(--gradient);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        flex-shrink: 0;
-        box-shadow: 0 0 20px rgba(139,127,245,0.4);
-    }
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 6px;
+}
 
-    .brand-text {
-        font-family: var(--font-display);
-        font-weight: 600;
-        font-size: 14.5px;
-        line-height: 1.25;
-        letter-spacing: -0.01em;
-        color: var(--text);
-    }
+.brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(180, 81, 56, 0.16);
+}
 
-    .brand-text span {
-        display: block;
-        font-family: var(--font-mono);
-        font-size: 10px;
-        font-weight: 400;
-        color: var(--text-faint);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        margin-top: 2px;
-    }
+.brand-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.15;
+    color: var(--text);
+}
 
-    .nav {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
+.brand-text span {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 400;
+    color: var(--text-faint);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+a.brand-link,
+a.brand-link:link,
+a.brand-link:visited,
+a.brand-link:hover,
+a.brand-link:active,
+a.brand-link:focus {
+    color: inherit;
+    text-decoration: none !important;
+}
 
-    .nav-label {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-faint);
-        padding: 0 10px;
-        margin-bottom: 6px;
-    }
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
 
-    .tab-btn {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        text-align: left;
-        padding: 10px 12px;
-        border: 1px solid transparent;
-        background: transparent;
-        color: var(--text-dim);
-        border-radius: 8px;
-        cursor: pointer;
-        font-family: var(--font-body);
-        font-size: 13.5px;
-        font-weight: 500;
-        position: relative;
-        transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
 
-    .tab-btn:hover { background: var(--panel-raised); color: var(--text); }
+.nav-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 0 10px;
+    margin-bottom: 7px;
+}
 
-    .tab-btn.active {
-        background: var(--panel-raised);
-        color: var(--text);
-        border-color: var(--border);
-    }
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 11px 12px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    position: relative;
+    transition: background 0.15s, color 0.15s;
+}
 
-    .tab-btn.active::before {
-        content: '';
-        position: absolute;
-        left: -16px;
-        top: 8px;
-        bottom: 8px;
-        width: 3px;
-        border-radius: 3px;
-        background: var(--gradient);
-        box-shadow: 0 0 10px rgba(139,127,245,0.7);
-    }
+.tab-btn:hover {
+    background: #E9E1D6;
+    color: var(--text);
+}
 
-    .tab-icon { font-size: 15px; opacity: 0.95; }
+.tab-btn.active {
+    background: var(--panel);
+    color: var(--violet);
+    border-color: var(--border);
+}
 
-    /* ---------------- Pipeline map (fills rail, reinforces product identity) ---------------- */
-    .pipeline-map {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        padding: 4px 10px;
-    }
+.tab-btn.active::before {
+    content: '';
+    position: absolute;
+    left: -17px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--gradient);
+}
 
-    .pipeline-step {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 0;
-        position: relative;
-    }
+.tab-icon {
+    font-size: 15px;
+}
 
-    .pipeline-step .stem {
-        position: relative;
-        width: 8px;
-        display: flex;
-        justify-content: center;
-        align-self: stretch;
-    }
+/* Pipeline */
 
-    .pipeline-step .stem::before {
-        content: '';
-        position: absolute;
-        top: -8px;
-        bottom: -8px;
-        width: 1px;
-        background: var(--border);
-    }
-    .pipeline-step:first-child .stem::before { top: 50%; }
-    .pipeline-step:last-child .stem::before { bottom: 50%; }
+.pipeline-map {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 10px;
+}
 
-    .pipeline-step .node {
-        position: relative;
-        z-index: 1;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--border);
-        flex-shrink: 0;
-    }
+.pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    position: relative;
+}
 
-    .pipeline-step.done .node { background: var(--emerald); box-shadow: 0 0 6px rgba(79,227,168,0.7); }
-    .pipeline-step.live .node {
-        background: var(--violet);
-        box-shadow: 0 0 8px rgba(139,127,245,0.9);
-        animation: pulse 1.6s ease-in-out infinite;
-    }
+.pipeline-step .stem {
+    position: relative;
+    width: 8px;
+    display: flex;
+    justify-content: center;
+    align-self: stretch;
+}
 
-    .pipeline-step .label {
-        font-family: var(--font-mono);
-        font-size: 10.5px;
-        color: var(--text-faint);
-        letter-spacing: 0.01em;
-    }
-    .pipeline-step.done .label { color: var(--text-dim); }
-    .pipeline-step.live .label { color: var(--text); font-weight: 500; }
+.pipeline-step .stem::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    bottom: -8px;
+    width: 1px;
+    background: var(--border);
+}
 
-    .rail-footer {
-        margin-top: auto;
-        padding: 10px;
-        border-top: 1px solid var(--border-soft);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-    }
+.pipeline-step:first-child .stem::before {
+    top: 50%;
+}
 
-    .user-chip {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 12.5px;
-        color: var(--text-dim);
-        min-width: 0;
-        font-weight: 500;
-    }
+.pipeline-step:last-child .stem::before {
+    bottom: 50%;
+}
 
-    .user-dot {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--gradient);
-        flex-shrink: 0;
-    }
+.pipeline-step .node {
+    position: relative;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #C9BFB3;
+    flex-shrink: 0;
+}
 
-    .user-chip span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: var(--text);
-    }
+.pipeline-step.done .node {
+    background: var(--emerald);
+}
 
-    .logout-link {
-        color: var(--text-dim);
-        font-size: 11.5px;
-        text-decoration: none;
-        white-space: nowrap;
-        border: 1px solid var(--border);
-        padding: 4px 9px;
-        border-radius: 6px;
-        transition: color 0.15s, border-color 0.15s, background 0.15s;
-    }
-    .logout-link:hover { color: var(--rose); border-color: rgba(255,136,136,0.5); background: rgba(255,136,136,0.08); }
+.pipeline-step.live .node {
+    background: var(--violet);
+    animation: pulse 1.6s ease-in-out infinite;
+}
 
-    /* ---------------- Main ---------------- */
-    .main {
-        flex: 1;
-        min-width: 0;
-        padding: 28px 36px 60px;
-    }
+.pipeline-step .label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-faint);
+}
 
-    .page-head {
-        margin-bottom: 22px;
-    }
+.pipeline-step.done .label {
+    color: var(--text-dim);
+}
 
-    .page-eyebrow {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--cyan);
-        margin-bottom: 6px;
-        font-weight: 500;
-    }
+.pipeline-step.live .label {
+    color: var(--text);
+    font-weight: 600;
+}
 
-    .page-title {
-        font-family: var(--font-display);
-        font-size: 25px;
-        font-weight: 600;
-        letter-spacing: -0.015em;
-        color: var(--text);
-    }
+/* Sidebar footer */
 
-    /* ---------------- Panels ---------------- */
-    .panel { display: none; }
-    .panel.active { display: block; }
+.rail-footer {
+    margin-top: auto;
+    padding: 14px 6px 4px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
 
-    .card {
-        background: var(--panel);
-        border: 1px solid var(--border-soft);
-        border-radius: 14px;
-        padding: 24px 24px 20px;
-        margin-bottom: 20px;
-    }
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+    min-width: 0;
+    font-weight: 500;
+}
 
-    .card-title {
-        font-family: var(--font-display);
-        font-size: 15.5px;
-        font-weight: 600;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        color: var(--text);
-    }
+.user-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--gradient);
+    flex-shrink: 0;
+}
 
-    .card-title::before {
-        content: '';
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--gradient);
-        box-shadow: 0 0 8px rgba(139,127,245,0.8);
-    }
+.user-chip span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+}
 
-    /* ---------------- Form controls ---------------- */
-    .upload-box {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
+.logout-link {
+    color: var(--text-dim);
+    font-size: 11px;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    padding: 6px 9px;
+    border-radius: 6px;
+    transition: 0.15s;
+}
 
-    input[type="text"], input[type="file"], input[type="email"], select {
-        background: var(--panel-raised);
-        border: 1px solid var(--border);
-        color: var(--text);
-        padding: 10px 13px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-family: var(--font-body);
-        outline: none;
-        transition: border-color 0.15s;
-    }
-    input[type="text"]:focus, input[type="file"]:focus, select:focus {
-        border-color: var(--violet);
-    }
-    input[type="text"]::placeholder { color: var(--text-faint); }
-    input[type="file"] { color: var(--text-dim); }
-    input[type="file"]::file-selector-button {
-        background: var(--border);
-        color: var(--text);
-        border: none;
-        padding: 7px 11px;
-        border-radius: 6px;
-        margin-right: 10px;
-        cursor: pointer;
-        font-family: var(--font-body);
-        font-size: 12px;
-        font-weight: 500;
-    }
+.logout-link:hover {
+    color: var(--rose);
+    border-color: var(--rose);
+    background: #F7E3DF;
+}
 
-    select { cursor: pointer; }
+/* Main content */
 
-    .search-input { min-width: 240px; }
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 38px 42px 60px;
+}
 
-    .toolbar {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
+.page-head {
+    margin-bottom: 26px;
+}
 
-    /* ---------------- Buttons: secondary (default) ---------------- */
-    button.action-btn {
-        background: var(--panel-raised);
-        border: 1px solid var(--border);
-        color: var(--text-dim);
-        padding: 8px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 12.5px;
-        font-family: var(--font-body);
-        font-weight: 600;
-        transition: border-color 0.15s, background 0.15s, color 0.15s;
-    }
-    button.action-btn:hover { border-color: var(--violet); background: var(--panel-raised-hover); color: var(--text); }
-    button.action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.page-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin-bottom: 9px;
+    font-weight: 500;
+}
 
-    /* ---------------- Buttons: primary (the natural next step) ---------------- */
-    button.action-btn.primary {
-        background: var(--gradient);
-        border: none;
-        color: #0B0D12;
-        font-weight: 700;
-    }
-    button.action-btn.primary:hover { filter: brightness(1.1); border: none; }
+.page-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3vw, 39px);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    color: var(--text);
+}
 
-    #uploadBtn {
-        background: var(--gradient);
-        border: none;
-        color: #0B0D12;
-        font-weight: 700;
-    }
-    #uploadBtn:hover { filter: brightness(1.1); }
+/* Panels and cards */
 
-    button.delete-btn {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text-faint);
-    }
-    button.delete-btn:hover { background: rgba(255,136,136,0.12); border-color: var(--rose); color: var(--rose); }
+.panel {
+    display: none;
+}
 
-    /* ---------------- Table ---------------- */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13.5px;
-    }
-    th, td {
-        text-align: left;
-        padding: 13px 10px;
-        border-bottom: 1px solid var(--border-soft);
-    }
-    th {
-        font-family: var(--font-mono);
-        font-size: 10.5px;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--text-faint);
-        font-weight: 500;
-    }
-    td { color: var(--text-dim); font-weight: 500; }
-    td:first-child { font-family: var(--font-mono); color: var(--text-faint); font-size: 12px; font-weight: 400; }
-    td:nth-child(2) { color: var(--text); font-weight: 600; }
+.panel.active {
+    display: block;
+}
 
-    tbody tr:nth-child(even) { background: rgba(255,255,255,0.014); }
-    tbody tr:hover { background: rgba(139,127,245,0.07); }
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 15px rgba(48, 44, 40, 0.025);
+}
 
-    /* ---------------- Status badges (signature: pulse dot) ---------------- */
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 5px 11px 5px 9px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-family: var(--font-mono);
-        font-weight: 600;
-        letter-spacing: 0.02em;
-        white-space: nowrap;
-        border: 1px solid transparent;
-    }
-    .status-badge::before {
-        content: '';
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        flex-shrink: 0;
-    }
+.card-title {
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+}
 
-    .status-uploaded, .status-draft {
-        background: rgba(198,202,218,0.14); color: #DADDE8; border-color: rgba(198,202,218,0.3);
-    }
-    .status-uploaded::before, .status-draft::before { background: #DADDE8; }
+.card-title::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--violet);
+    flex-shrink: 0;
+}
 
-    .status-extracted, .status-generated {
-        background: rgba(95,220,240,0.14); color: var(--cyan); border-color: rgba(95,220,240,0.35);
-    }
-    .status-extracted::before, .status-generated::before {
-        background: var(--cyan); box-shadow: 0 0 6px var(--cyan);
-        animation: pulse 1.6s ease-in-out infinite;
-    }
+/* Forms */
 
-    .status-analyzed {
-        background: rgba(139,127,245,0.16); color: #B3A9FF; border-color: rgba(139,127,245,0.4);
-    }
-    .status-analyzed::before { background: #B3A9FF; box-shadow: 0 0 6px #B3A9FF; }
+.upload-box {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
 
-    .status-failed, .status-rejected {
-        background: rgba(255,136,136,0.14); color: var(--rose); border-color: rgba(255,136,136,0.35);
-    }
-    .status-failed::before, .status-rejected::before { background: var(--rose); }
+input[type="text"],
+input[type="file"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    background: #FFFEFA;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 13px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
 
-    .status-sent_for_review {
-        background: rgba(240,176,78,0.16); color: var(--amber); border-color: rgba(240,176,78,0.4);
-    }
-    .status-sent_for_review::before {
-        background: var(--amber); box-shadow: 0 0 6px var(--amber);
-        animation: pulse 1.6s ease-in-out infinite;
-    }
+input[type="text"]:focus,
+input[type="file"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px rgba(180, 81, 56, 0.09);
+}
 
-    .status-approved {
-        background: rgba(79,227,168,0.16); color: var(--emerald); border-color: rgba(79,227,168,0.4);
-    }
-    .status-approved::before { background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
+input::placeholder,
+textarea::placeholder {
+    color: #A49A8F;
+}
 
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-    }
+input[type="file"] {
+    color: var(--text-dim);
+    max-width: 100%;
+}
 
-    .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
-    .actions-cell button { font-size: 11.5px; padding: 7px 11px; }
+input[type="file"]::file-selector-button {
+    background: #F1EDE5;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 7px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px;
+}
 
-    .loading { color: var(--text-faint); font-style: italic; font-size: 13px; }
+select {
+    cursor: pointer;
+}
 
-    /* ---------------- Message box ---------------- */
-    .msg-box {
-        margin-top: 14px;
-        padding: 12px 15px;
-        border-radius: 9px;
-        font-size: 13px;
-        display: none;
-        align-items: center;
-        gap: 10px;
-        font-family: var(--font-body);
-        font-weight: 500;
-        border: 1px solid transparent;
-    }
-    .msg-box.show { display: flex; }
-    .msg-success { background: rgba(79,227,168,0.1); color: var(--emerald); border-color: rgba(79,227,168,0.3); }
-    .msg-error { background: rgba(255,136,136,0.1); color: var(--rose); border-color: rgba(255,136,136,0.3); }
-    .msg-loading { background: rgba(139,127,245,0.1); color: #B3A9FF; border-color: rgba(139,127,245,0.3); }
+.search-input {
+    min-width: 240px;
+    flex: 1;
+}
 
-    a.pdf-link {
-        color: var(--cyan);
-        text-decoration: none;
-        font-size: 12.5px;
-        font-family: var(--font-mono);
-        font-weight: 500;
-        border-bottom: 1px solid rgba(95,220,240,0.4);
-    }
-    a.pdf-link:hover { border-color: var(--cyan); }
+.toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+}
 
-    /* ---------------- Spinners ---------------- */
-    .spinner {
-        width: 13px;
-        height: 13px;
-        border: 2px solid rgba(139,127,245,0.25);
-        border-top-color: var(--violet);
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-        flex-shrink: 0;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+/* Buttons */
 
-    .btn-spinner {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        border: 2px solid rgba(255,255,255,0.4);
-        border-top-color: currentColor;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-        margin-right: 6px;
-        vertical-align: middle;
-    }
+button.action-btn {
+    background: #FFFEFA;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 9px 13px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
 
-    .empty-row td {
-        text-align: center;
-        color: var(--text-faint);
-        padding: 34px 10px;
-        font-style: italic;
-        font-family: var(--font-body);
-    }
+button.action-btn:hover {
+    border-color: var(--violet);
+    background: #F7F0E9;
+    color: var(--text);
+}
 
-    @media (max-width: 860px) {
-        .rail { display: none; }
-        .main { padding: 20px 16px 40px; }
-    }
- /* ============================= */
-/* REQUIREMENTS MODAL - DARK THEME */
-/* ============================= */
+button.action-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+button.action-btn.primary,
+#uploadBtn {
+    background: var(--violet);
+    border: 1px solid var(--violet);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+button.action-btn.primary:hover,
+#uploadBtn:hover {
+    background: #963F2B;
+    border-color: #963F2B;
+}
+
+button.delete-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+}
+
+button.delete-btn:hover {
+    background: #F7E3DF;
+    border-color: var(--rose);
+    color: var(--rose);
+}
+
+/* Tables */
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 14px 11px;
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+}
+
+th {
+    background: #F7F4EE;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+td {
+    color: var(--text-dim);
+    font-weight: 400;
+}
+
+td:first-child {
+    font-family: var(--font-mono);
+    color: var(--text-faint);
+    font-size: 11px;
+}
+
+td:nth-child(2) {
+    color: var(--text);
+    font-weight: 600;
+}
+
+tbody tr:hover {
+    background: #FAF7F1;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 170px;
+}
+
+.actions-cell button {
+    font-size: 10.5px;
+    padding: 7px 9px;
+}
+
+.empty-row td {
+    text-align: center;
+    color: var(--text-faint);
+    padding: 34px 10px;
+    font-style: italic;
+}
+
+/* Status badges */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.status-uploaded,
+.status-draft {
+    background: #EAE4DA;
+    color: #625A52;
+    border-color: #DDD4C8;
+}
+
+.status-uploaded::before,
+.status-draft::before {
+    background: #8D8277;
+}
+
+.status-extracted,
+.status-generated {
+    background: #E5EEF4;
+    color: #345C76;
+    border-color: #D2E2ED;
+}
+
+.status-extracted::before,
+.status-generated::before {
+    background: #477A9A;
+}
+
+.status-analyzed,
+.status-sent_for_review {
+    background: #F8E8D7;
+    color: #8B572A;
+    border-color: #EFD5B9;
+}
+
+.status-analyzed::before,
+.status-sent_for_review::before {
+    background: #AD7838;
+}
+
+.status-approved {
+    background: #E3EFE5;
+    color: #37684B;
+    border-color: #CDE2D1;
+}
+
+.status-approved::before {
+    background: #47775D;
+}
+
+.status-failed,
+.status-rejected {
+    background: #F7E3DF;
+    color: #A43F35;
+    border-color: #EED0CA;
+}
+
+.status-failed::before,
+.status-rejected::before {
+    background: #B94C42;
+}
+
+/* Messages */
+
+.msg-box {
+    margin-top: 14px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.msg-box.show {
+    display: flex;
+}
+
+.msg-success {
+    background: #E3EFE5;
+    color: #37684B;
+    border-color: #CDE2D1;
+}
+
+.msg-error {
+    background: #F7E3DF;
+    color: #A43F35;
+    border-color: #EED0CA;
+}
+
+.msg-loading {
+    background: #F8E8D7;
+    color: #8B572A;
+    border-color: #EFD5B9;
+}
+
+.loading {
+    color: var(--text-faint);
+    font-style: italic;
+    font-size: 12px;
+}
+
+a.pdf-link {
+    color: var(--violet);
+    text-decoration: none;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    border-bottom: 1px solid rgba(180, 81, 56, 0.35);
+}
+
+a.pdf-link:hover {
+    border-color: var(--violet);
+}
+
+/* Loading indicators */
+
+.spinner {
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(180, 81, 56, 0.2);
+    border-top-color: var(--violet);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+.btn-spinner {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+/* Requirements modal */
 
 .requirements-modal {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 9999;
-
     width: 100%;
     height: 100%;
-
-    /* Dark overlay */
-    background: rgba(0, 0, 0, 0.75);
-
+    background: rgba(48, 44, 40, 0.48);
     align-items: center;
     justify-content: center;
-
     padding: 20px;
 }
-
-
-/* ============================= */
-/* MODAL BOX */
-/* ============================= */
 
 .requirements-modal-content {
     width: 90%;
     max-width: 750px;
-    max-height: 80vh;
-
-    /* DARK THEME */
-    background: #0d1117;
-
-    border: 1px solid #252b35;
-    border-radius: 14px;
-
+    max-height: 85vh;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
     overflow: hidden;
-
-    box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.8);
-
+    box-shadow: 0 25px 70px rgba(48, 44, 40, 0.2);
     display: flex;
     flex-direction: column;
 }
-
-
-/* ============================= */
-/* HEADER */
-/* ============================= */
 
 .requirements-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+    gap: 12px;
     padding: 22px 26px;
-
-    background: #0d1117;
-
-    border-bottom: 1px solid #252b35;
+    background: #F7F4EE;
+    border-bottom: 1px solid var(--border-soft);
 }
 
 .requirements-modal-header h2 {
-    color: #f1f5f9;
-
-    margin: 0 0 6px 0;
-
-    font-size: 24px;
-    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    font-size: 25px;
+    font-weight: 500;
 }
 
 #requirementsRfpTitle {
     display: block;
-
     margin-top: 4px;
-
-    font-size: 14px;
-
-    color: #7f8a9a;
+    font-size: 12px;
+    color: var(--text-faint);
 }
-
-
-/* ============================= */
-/* X CLOSE BUTTON */
-/* ============================= */
 
 .requirements-close {
     border: none;
-
     background: transparent;
-
-    font-size: 30px;
-
+    font-size: 28px;
     cursor: pointer;
-
-    color: #8b949e;
-
-    padding: 5px 10px;
-
-    transition: 0.2s;
+    color: var(--text-faint);
+    padding: 4px 10px;
 }
 
 .requirements-close:hover {
-    color: #ffffff;
-
-    background: #1a2029;
-
+    color: var(--violet);
+    background: #EAE4DA;
     border-radius: 6px;
 }
 
-
-/* ============================= */
-/* CONTENT */
-/* ============================= */
-
 .requirements-content {
     padding: 26px;
-
     overflow-y: auto;
-
     line-height: 1.6;
-
-    color: #c9d1d9;
-
+    color: var(--text-dim);
     flex: 1;
 }
-
-
-/* Scrollbar */
 
 .requirements-content::-webkit-scrollbar {
     width: 8px;
 }
 
 .requirements-content::-webkit-scrollbar-track {
-    background: #0d1117;
+    background: #F7F4EE;
 }
 
 .requirements-content::-webkit-scrollbar-thumb {
-    background: #30363d;
+    background: #D4C8BA;
     border-radius: 10px;
 }
 
-.requirements-content::-webkit-scrollbar-thumb:hover {
-    background: #484f58;
-}
-
-
-/* ============================= */
-/* REQUIREMENT ITEM */
-/* ============================= */
-
 .requirement-item {
-    margin-bottom: 28px;
-
-    padding-bottom: 18px;
-
-    border-bottom: 1px solid #21262d;
+    margin-bottom: 24px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid var(--border-soft);
 }
 
 .requirement-item:last-child {
     border-bottom: none;
 }
 
-
 .requirement-item h3 {
-    color: #e6edf3;
-
-    margin: 0 0 10px 0;
-
+    color: var(--text);
+    margin: 0 0 10px;
+    font-family: var(--font-display);
     font-size: 19px;
+    font-weight: 500;
+}
 
-    font-weight: 600;
+.requirement-item p,
+.requirement-item li,
+.requirement-view-value {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.7;
 }
 
 .requirement-item p {
-    color: #aab4c0;
-
     margin: 0;
-
-    font-size: 16px;
 }
 
 .requirement-item ul {
     margin: 8px 0 0;
-
-    padding-left: 24px;
+    padding-left: 22px;
 }
 
 .requirement-item li {
-    color: #aab4c0;
-
-    margin-bottom: 7px;
-
-    font-size: 16px;
+    margin-bottom: 6px;
 }
-
-
-/* ============================= */
-/* NESTED REQUIREMENTS */
-/* ============================= */
 
 .nested-requirements {
     padding-left: 15px;
 }
 
-
-/* ============================= */
-/* FOOTER */
-/* ============================= */
-
 .requirements-modal-footer {
     padding: 16px 26px;
-
-    background: #0d1117;
-
-    border-top: 1px solid #252b35;
-
+    background: #F7F4EE;
+    border-top: 1px solid var(--border-soft);
     display: flex;
-
     justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-
-/* ============================= */
-/* CLOSE BUTTON */
-/* ============================= */
-
 .requirements-close-btn {
-    border: 1px solid #30363d;
-
-    padding: 10px 20px;
-
+    border: 1px solid var(--border);
+    padding: 9px 15px;
     border-radius: 7px;
-
     cursor: pointer;
-
-    font-size: 14px;
-
-    background: #161b22;
-
-    color: #c9d1d9;
-
-    transition: 0.2s;
+    font-size: 12px;
+    background: var(--panel);
+    color: var(--text-dim);
 }
 
 .requirements-close-btn:hover {
-    background: #21262d;
+    background: #F1EDE5;
+    color: var(--text);
+}
 
-    color: #ffffff;
+.requirement-edit-input,
+.requirement-edit-textarea {
+    width: 100%;
+    background: #FFFEFA;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--text);
+    padding: 11px 13px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+}
+
+.requirement-edit-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.feature-edit-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 9px;
+    align-items: center;
+}
+
+.feature-edit-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.remove-feature-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: #FFFEFA;
+    color: var(--rose);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.remove-feature-btn:hover {
+    background: #F7E3DF;
+    border-color: var(--rose);
+}
+
+.add-feature-btn {
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: 1px dashed var(--border);
+    background: #F7F4EE;
+    color: var(--violet);
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.add-feature-btn:hover {
+    border-color: var(--violet);
+    background: #F7F0E9;
+}
+
+/* Responsive */
+
+@media (max-width: 1000px) {
+    .main {
+        padding: 28px 22px 45px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 860px) {
+    .shell {
+        display: block;
+    }
+
+    .rail {
+        width: 100%;
+        padding: 14px 16px;
+        gap: 15px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .rail > div:nth-of-type(2) {
+        display: none;
+    }
+
+    .nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .nav-label {
+        width: 100%;
+    }
+
+    .tab-btn {
+        width: auto;
+    }
+
+    .tab-btn.active::before {
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: -1px;
+        height: 2px;
+        width: auto;
+    }
+
+    .rail-footer {
+        margin-top: 0;
+    }
+
+    .main {
+        padding: 26px 16px 40px;
+    }
+}
+
+@media (max-width: 560px) {
+    .page-title {
+        font-size: 29px;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: 9px;
+    }
+
+    .card-title {
+        font-size: 19px;
+    }
+
+    .upload-box {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .upload-box input,
+    .upload-box button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .search-input {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .toolbar select {
+        width: 100%;
+    }
+
+    .requirements-modal {
+        padding: 10px;
+    }
+
+    .requirements-modal-content {
+        width: 100%;
+        max-height: 92vh;
+    }
+
+    .requirements-modal-header,
+    .requirements-content,
+    .requirements-modal-footer {
+        padding: 17px;
+    }   
 }
 </style>
 </head>
-<body>
 
+<body>
 {% csrf_token %}
 
 <div class="shell">
 
     <aside class="rail">
-        <div class="brand">
+
+        <a href="{% url 'home' %}" class="brand-link" aria-label="Go to home page">
             <div class="brand-mark">🧠</div>
-            <div class="brand-text">
-                Proposal Engine
-                <span>AI Pipeline</span>
+            <div>
+                <div class="brand-name">Proposal Engine</div>
+                <div class="brand-subtitle">AI Pipeline</div>
             </div>
-        </div>
+        </a>
 
         <nav class="nav">
             <div class="nav-label">Workspace</div>
-            <button class="tab-btn active" onclick="switchTab('rfps')">
+            <button type="button" class="tab-btn active" onclick="switchTab('rfps', this)">
                 <span class="tab-icon">📄</span> RFPs
             </button>
-            <button class="tab-btn" onclick="switchTab('proposals')">
+            <button type="button" class="tab-btn" onclick="switchTab('proposals', this)">
                 <span class="tab-icon">📋</span> Proposals
             </button>
         </nav>
@@ -870,13 +1128,13 @@
                 <div class="user-dot"></div>
                 <span>{{ request.user.username }}</span>
             </div>
-            <a href="/logout/" class="logout-link">Log out</a>
+            <a href="{% url 'logout' %}" class="logout-link">Log out</a>
         </div>
     </aside>
 
     <main class="main">
 
-        <!-- RFPs Panel -->
+        <!-- RFPs -->
         <div id="rfps" class="panel active">
             <div class="page-head">
                 <div class="page-eyebrow">Stage 01 — Intake</div>
@@ -888,7 +1146,7 @@
                 <form id="uploadForm" class="upload-box">
                     <input type="text" id="rfpTitle" placeholder="RFP title" required>
                     <input type="file" id="rfpFile" accept=".pdf,.docx,.txt" required>
-                    <button type="submit" class="action-btn" id="uploadBtn">Upload</button>
+                    <button type="submit" class="action-btn" id="uploadBtn">Upload RFP</button>
                 </form>
                 <div id="uploadMsg" class="msg-box"></div>
             </div>
@@ -905,204 +1163,102 @@
                         <option value="failed">Failed</option>
                     </select>
                 </div>
-                <table id="rfpTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th><th>Title</th><th>Status</th><th>Uploaded</th><th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rfpTableBody">
-                        <tr><td colspan="5" class="loading">Loading RFPs…</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    <!-- Proposals Panel -->
-    <div id="proposals" class="panel">
-
-        <div class="page-head">
-
-            <div class="page-eyebrow">
-                Stage 02–05 — Generate · Estimate · Export · Send
-            </div>
-
-            <div class="page-title">
-                Proposals
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-title">
-                All Proposals
-            </div>
-
-
-            <div class="toolbar">
-
-                <input
-                    type="text"
-                    id="proposalSearch"
-                    class="search-input"
-                    placeholder="Search by title…"
-                >
-
-                <select id="proposalStatusFilter">
-
-                    <option value="">
-                        All statuses
-                    </option>
-
-                    <option value="draft">
-                        Draft
-                    </option>
-
-                    <option value="generated">
-                        Generated
-                    </option>
-
-                    <option value="sent_for_review">
-                        Sent for review
-                    </option>
-
-                    <option value="approved">
-                        Approved
-                    </option>
-
-                    <option value="rejected">
-                        Rejected
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <table id="proposalTable">
-
-                <thead>
-
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Cost</th>
-                        <th>Timeline</th>
-                        <th>Status</th>
-                        <th>PDF</th>
-                        <th>Actions</th>
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="proposalTableBody">
-
-                    <tr>
-
-                        <td
-                            colspan="7"
-                            class="loading"
-                        >
-                            Loading proposals…
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-    <!-- Requirements Modal -->
-    <div
-        id="requirementsModal"
-        class="requirements-modal"
-    >
-
-        <div class="requirements-modal-content">
-
-
-            <!-- Modal Header -->
-            <div class="requirements-modal-header">
-
-                <div>
-
-                    <h2>
-                        RFP Requirements
-                    </h2>
-
-                    <span id="requirementsRfpTitle"></span>
-
+                <div class="table-wrap">
+                    <table id="rfpTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Title</th><th>Status</th><th>Uploaded</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rfpTableBody">
+                            <tr><td colspan="5" class="loading">Loading RFPs…</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-
-
-                <button
-                    type="button"
-                    class="requirements-close"
-                    onclick="closeRequirementsModal()"
-                >
-                    &times;
-                </button>
-
             </div>
-
-
-            <!-- Requirements Content -->
-            <div
-                id="requirementsContent"
-                class="requirements-content"
-            >
-
-                <!-- JavaScript will insert requirements here -->
-
-            </div>
-
-
-            <!-- Modal Footer -->
-            <div class="requirements-modal-footer">
-
-                <button
-                    type="button"
-                    class="requirements-close-btn"
-                    onclick="closeRequirementsModal()"
-                >
-                    Close
-                </button>
-
-            </div>
-
-
         </div>
 
+        <!-- Proposals -->
+        <div id="proposals" class="panel">
+            <div class="page-head">
+                <div class="page-eyebrow">Stage 02–05 — Generate · Estimate · Export · Send</div>
+                <div class="page-title">Proposals</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">All Proposals</div>
+                <div class="toolbar">
+                    <input type="text" id="proposalSearch" class="search-input" placeholder="Search by title…">
+                    <select id="proposalStatusFilter">
+                        <option value="">All statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="generated">Generated</option>
+                        <option value="sent_for_review">Sent for review</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="table-wrap">
+                    <table id="proposalTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Title</th><th>Cost</th><th>Timeline</th><th>Status</th><th>PDF</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proposalTableBody">
+                            <tr><td colspan="7" class="loading">Loading proposals…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Requirements Modal -->
+<div id="requirementsModal" class="requirements-modal">
+    <div class="requirements-modal-content">
+        <div class="requirements-modal-header">
+            <div>
+                <h2>RFP Requirements</h2>
+                <span id="requirementsRfpTitle"></span>
+            </div>
+            <button type="button" class="requirements-close" onclick="closeRequirementsModal()" aria-label="Close">&times;</button>
+        </div>
+
+        <div id="requirementsContent" class="requirements-content">
+            <div class="loading">Loading requirements…</div>
+        </div>
+
+        <div class="requirements-modal-footer">
+            <button type="button" id="editRequirementsBtn" class="action-btn" onclick="enableRequirementsEdit()">Edit</button>
+            <button type="button" id="saveRequirementsBtn" class="action-btn primary" onclick="saveRequirements()" style="display:none;">Save Requirements</button>
+            <button type="button" class="requirements-close-btn" onclick="closeRequirementsModal()">Close</button>
+        </div>
     </div>
-
-
-</main>
-
+</div>
 
 <script>
-
-// ---------------- CSRF helper ----------------
 function getCookie(name) {
     let cookieValue = null;
+
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
+
         for (let cookie of cookies) {
             cookie = cookie.trim();
+
             if (cookie.startsWith(name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
             }
         }
     }
+
     return cookieValue;
 }
+
 const CSRF_TOKEN = getCookie('csrftoken');
 
 const API = {
@@ -1110,30 +1266,46 @@ const API = {
     rfpDetail: id => `/api/rfp/rfps/${id}/`,
     analyze: id => `/api/rfp/rfps/${id}/analyze/`,
     requirements: id => `/api/rfp/rfps/${id}/requirements/`,
+    updateRequirements: id => `/api/rfp/rfps/${id}/requirements/update/`,
     generate: '/api/proposals/generate/',
     proposals: '/api/proposals/proposals/',
     proposalDetail: id => `/api/proposals/proposals/${id}/`,
     estimate: id => `/api/proposals/proposals/${id}/estimate/`,
     exportPdf: id => `/api/proposals/proposals/${id}/export-pdf/`,
     sendReview: id => `/api/proposals/proposals/${id}/send-for-review/`,
-    sendToClient: id => `/api/proposals/proposals/${id}/send-to-client/`,
+    sendToClient: id => `/api/proposals/proposals/${id}/send-to-client/`
 };
 
 let allRfps = [];
 let allProposals = [];
+let currentRfpId = null;
+let currentRequirements = null;
 
-function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+function switchTab(tab, button) {
+    document.querySelectorAll('.tab-btn').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(item => item.classList.remove('active'));
+
     document.getElementById(tab).classList.add('active');
-    event.target.closest('.tab-btn').classList.add('active');
-    if (tab === 'proposals') loadProposals();
+    button.classList.add('active');
+
+    if (tab === 'proposals') {
+        loadProposals();
+    }
 }
 
 function showMsg(elId, text, type) {
     const el = document.getElementById(elId);
-    el.innerHTML = type === 'loading' ? `<span class="spinner"></span> ${text}` : text;
+    el.textContent = '';
     el.className = `msg-box show msg-${type}`;
+
+    if (type === 'loading') {
+        const spinner = document.createElement('span');
+        spinner.className = 'spinner';
+        el.appendChild(spinner);
+    }
+
+    el.appendChild(document.createTextNode(text));
+
     if (type !== 'loading') {
         setTimeout(() => el.classList.remove('show'), 6000);
     }
@@ -1144,28 +1316,62 @@ function hideMsg(elId) {
 }
 
 function statusBadge(status) {
-    return `<span class="status-badge status-${status}">${status.replace(/_/g, ' ')}</span>`;
+    const safeStatus = String(status || 'unknown');
+    const badge = document.createElement('span');
+    badge.className = `status-badge status-${safeStatus}`;
+    badge.textContent = safeStatus.replace(/_/g, ' ');
+    return badge.outerHTML;
 }
 
 function setButtonLoading(btn, loadingText) {
+    if (!btn) return;
+
     btn.dataset.originalText = btn.innerHTML;
     btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
     btn.disabled = true;
 }
 
+function restoreButton(btn) {
+    if (!btn) return;
+
+    btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+    btn.disabled = false;
+}
+
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[char]);
+}
+
 // ---------------- RFPs ----------------
+
 async function loadRfps() {
-    const res = await fetch(API.rfps);
-    const data = await res.json();
-    allRfps = data.results || data;
-    renderRfps();
+    try {
+        const res = await fetch(API.rfps);
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || 'Could not load RFPs.');
+        }
+
+        allRfps = data.results || data;
+        renderRfps();
+    } catch (error) {
+        document.getElementById('rfpTableBody').innerHTML =
+            `<tr class="empty-row"><td colspan="5">${escapeHtml(error.message)}</td></tr>`;
+    }
 }
 
 function renderRfps() {
     const searchTerm = document.getElementById('rfpSearch').value.toLowerCase();
     const statusFilter = document.getElementById('rfpStatusFilter').value;
 
-    let filtered = allRfps.filter(rfp => {
+    const filtered = allRfps.filter(rfp => {
         const matchesSearch = (rfp.title || '').toLowerCase().includes(searchTerm);
         const matchesStatus = !statusFilter || rfp.status === statusFilter;
         return matchesSearch && matchesStatus;
@@ -1174,31 +1380,41 @@ function renderRfps() {
     const rows = filtered.map(rfp => `
         <tr>
             <td>#${rfp.id}</td>
-            <td>${rfp.title || '-'}</td>
+            <td>${escapeHtml(rfp.title || '-')}</td>
             <td>${statusBadge(rfp.status)}</td>
-            <td>${new Date(rfp.uploaded_at).toLocaleString()}</td>
+            <td>${rfp.uploaded_at ? escapeHtml(new Date(rfp.uploaded_at).toLocaleString()) : '—'}</td>
             <td class="actions-cell">
                 ${rfp.status === 'extracted'
-                    ? `<button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Analyze</button>` : ''}
+                    ? `<button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Analyze</button>`
+                    : ''}
                 ${rfp.status === 'analyzed'
-        ? `<button class="action-btn primary" onclick="generateProposal(${rfp.id}, this)">Generate proposal</button>
-        <button class="action-btn" onclick="viewRequirements(${rfp.id})">View Requirements</button>
-        <button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Re-analyze</button>` : ''}
-        <button class="action-btn delete-btn" onclick="deleteRfp(${rfp.id}, this)">Delete</button>  
+                    ? `<button class="action-btn primary" onclick="generateProposal(${rfp.id}, this)">Generate proposal</button>
+                       <button class="action-btn" onclick="viewRequirements(${rfp.id})">View requirements</button>
+                       <button class="action-btn" onclick="analyzeRfp(${rfp.id}, this)">Re-analyze</button>`
+                    : ''}
+                <button class="action-btn delete-btn" onclick="deleteRfp(${rfp.id}, this)">Delete</button>
             </td>
         </tr>
     `).join('');
-    document.getElementById('rfpTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="5">No RFPs match your search or filter.</td></tr>';
+
+    document.getElementById('rfpTableBody').innerHTML = rows ||
+        '<tr class="empty-row"><td colspan="5">No RFPs match your search or filter.</td></tr>';
 }
 
 document.getElementById('rfpSearch').addEventListener('input', renderRfps);
 document.getElementById('rfpStatusFilter').addEventListener('change', renderRfps);
 
-document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const title = document.getElementById('rfpTitle').value;
+document.getElementById('uploadForm').addEventListener('submit', async event => {
+    event.preventDefault();
+
+    const title = document.getElementById('rfpTitle').value.trim();
     const file = document.getElementById('rfpFile').files[0];
     const uploadBtn = document.getElementById('uploadBtn');
+
+    if (!file) {
+        showMsg('uploadMsg', 'Please select an RFP file.', 'error');
+        return;
+    }
 
     const formData = new FormData();
     formData.append('title', title);
@@ -1213,152 +1429,271 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             headers: { 'X-CSRFToken': CSRF_TOKEN },
             body: formData
         });
+
         const data = await res.json();
+
         if (res.ok) {
-            showMsg('uploadMsg', data.message, 'success');
+            showMsg('uploadMsg', data.message || 'RFP uploaded successfully.', 'success');
             document.getElementById('uploadForm').reset();
-            loadRfps();
+            await loadRfps();
         } else {
             showMsg('uploadMsg', data.error || 'Upload failed.', 'error');
         }
-    } catch (err) {
-        showMsg('uploadMsg', 'Network error: ' + err.message, 'error');
+    } catch (error) {
+        showMsg('uploadMsg', 'Network error: ' + error.message, 'error');
     } finally {
-        uploadBtn.innerHTML = uploadBtn.dataset.originalText;
-        uploadBtn.disabled = false;
+        restoreButton(uploadBtn);
     }
 });
 
 async function analyzeRfp(id, btn) {
     setButtonLoading(btn, 'Analyzing…');
     showMsg('uploadMsg', 'Analyzing RFP with AI…', 'loading');
+
     try {
         const res = await fetch(API.analyze(id), {
             method: 'POST',
             headers: { 'X-CSRFToken': CSRF_TOKEN }
         });
+
         const data = await res.json();
+
         if (res.ok) {
             showMsg('uploadMsg', 'RFP analyzed successfully.', 'success');
         } else {
             showMsg('uploadMsg', data.error || 'Analysis failed.', 'error');
         }
+    } catch (error) {
+        showMsg('uploadMsg', 'Analysis error: ' + error.message, 'error');
     } finally {
-        loadRfps();
+        await loadRfps();
     }
 }
 
+// ---------------- Requirements modal ----------------
+
 async function viewRequirements(id) {
+    currentRfpId = id;
 
-    const modal = document.getElementById("requirementsModal");
-    const content = document.getElementById("requirementsContent");
-    const title = document.getElementById("requirementsRfpTitle");
+    const modal = document.getElementById('requirementsModal');
+    const content = document.getElementById('requirementsContent');
+    const title = document.getElementById('requirementsRfpTitle');
 
-    modal.style.display = "flex";
-    content.innerHTML = "<p>Loading requirements...</p>";
+    modal.style.display = 'flex';
+    content.innerHTML = '<div class="loading">Loading requirements…</div>';
+
+    document.getElementById('editRequirementsBtn').style.display = 'inline-block';
+    document.getElementById('saveRequirementsBtn').style.display = 'none';
 
     try {
-
         const res = await fetch(API.requirements(id));
         const data = await res.json();
 
         if (!res.ok) {
-            content.innerHTML = `
-                <p style="color: red;">
-                    ${data.error || "Could not load requirements."}
-                </p>
-            `;
+            content.innerHTML = `<p>${escapeHtml(data.error || 'Could not load requirements.')}</p>`;
             return;
         }
 
         title.textContent = data.title || `RFP #${id}`;
-
-        const requirements = data.requirements;
-
-        if (!requirements) {
-            content.innerHTML = `
-                <p>No requirements found for this RFP.</p>
-            `;
-            return;
-        }
-
-        content.innerHTML = formatRequirements(requirements);
-
-    } catch (err) {
-
-        content.innerHTML = `
-            <p style="color: red;">
-                Error loading requirements: ${err.message}
-            </p>
-        `;
+        currentRequirements = data.requirements || {};
+        content.innerHTML = formatRequirements(currentRequirements);
+    } catch (error) {
+        content.innerHTML = `<p>Error loading requirements: ${escapeHtml(error.message)}</p>`;
     }
 }
 
+function enableRequirementsEdit() {
+    if (!currentRequirements) {
+        alert('No requirements are available to edit.');
+        return;
+    }
+
+    const requirements = currentRequirements;
+
+    document.getElementById('requirementsContent').innerHTML = `
+        <div class="requirement-item">
+            <h3>Project Type</h3>
+            <input type="text" id="editProjectType" class="requirement-edit-input" placeholder="Enter project type">
+        </div>
+
+        <div class="requirement-item">
+            <h3>Client Name</h3>
+            <input type="text" id="editClientName" class="requirement-edit-input" placeholder="Enter client name">
+        </div>
+
+        <div class="requirement-item">
+            <h3>Budget Range</h3>
+            <input type="text" id="editBudgetRange" class="requirement-edit-input" placeholder="Enter budget range">
+        </div>
+
+        <div class="requirement-item">
+            <h3>Timeline</h3>
+            <input type="text" id="editTimeline" class="requirement-edit-input" placeholder="Enter timeline">
+        </div>
+
+        <div class="requirement-item">
+            <h3>Required Features</h3>
+            <div id="featuresEditContainer"></div>
+            <button type="button" class="add-feature-btn" onclick="addFeatureField()">+ Add feature</button>
+        </div>
+
+        <div class="requirement-item">
+            <h3>Summary</h3>
+            <textarea id="editSummary" class="requirement-edit-textarea" placeholder="Enter summary"></textarea>
+        </div>
+    `;
+
+    document.getElementById('editProjectType').value = requirements.project_type || '';
+    document.getElementById('editClientName').value = requirements.client_name || '';
+    document.getElementById('editBudgetRange').value = requirements.budget_range || '';
+    document.getElementById('editTimeline').value = requirements.timeline || '';
+    document.getElementById('editSummary').value = requirements.summary || '';
+
+    (requirements.required_features || []).forEach(feature => addFeatureField(feature));
+
+    document.getElementById('editRequirementsBtn').style.display = 'none';
+    document.getElementById('saveRequirementsBtn').style.display = 'inline-block';
+}
+
+function addFeatureField(value = '') {
+    const container = document.getElementById('featuresEditContainer');
+    if (!container) return;
+
+    const row = document.createElement('div');
+    row.className = 'feature-edit-row';
+
+    row.innerHTML = `
+        <input type="text" class="requirement-edit-input feature-input" placeholder="Enter required feature">
+        <button type="button" class="remove-feature-btn" title="Remove feature">×</button>
+    `;
+
+    row.querySelector('.feature-input').value = value || '';
+    row.querySelector('.remove-feature-btn').addEventListener('click', () => row.remove());
+
+    container.appendChild(row);
+}
+
+async function saveRequirements() {
+    if (!currentRfpId) {
+        alert('RFP ID is missing.');
+        return;
+    }
+
+    const features = [...document.querySelectorAll('.feature-input')]
+        .map(input => input.value.trim())
+        .filter(Boolean);
+
+    const updatedRequirements = {
+        project_type: document.getElementById('editProjectType').value.trim(),
+        client_name: document.getElementById('editClientName').value.trim(),
+        budget_range: document.getElementById('editBudgetRange').value.trim(),
+        timeline: document.getElementById('editTimeline').value.trim(),
+        required_features: features,
+        summary: document.getElementById('editSummary').value.trim()
+    };
+
+    const saveBtn = document.getElementById('saveRequirementsBtn');
+    setButtonLoading(saveBtn, 'Saving…');
+
+    try {
+        const res = await fetch(API.updateRequirements(currentRfpId), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: JSON.stringify({ requirements: updatedRequirements })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.error || 'Failed to save requirements.');
+            return;
+        }
+
+        currentRequirements = updatedRequirements;
+        document.getElementById('requirementsContent').innerHTML =
+            formatRequirements(currentRequirements);
+
+        document.getElementById('editRequirementsBtn').style.display = 'inline-block';
+        document.getElementById('saveRequirementsBtn').style.display = 'none';
+
+        alert('Requirements saved successfully.');
+        await loadRfps();
+    } catch (error) {
+        alert('Error saving requirements: ' + error.message);
+    } finally {
+        restoreButton(saveBtn);
+        if (document.getElementById('requirementsContent').querySelector('#editProjectType')) {
+            saveBtn.style.display = 'inline-block';
+        }
+    }
+}
 
 function formatRequirements(requirements) {
+    if (!requirements || typeof requirements !== 'object') {
+        return '<p>No requirements available.</p>';
+    }
 
-    let html = "";
+    let html = '';
 
     for (const [key, value] of Object.entries(requirements)) {
-
         const heading = key
-            .replace(/_/g, " ")
+            .replace(/_/g, ' ')
             .replace(/\b\w/g, char => char.toUpperCase());
 
         html += `
             <div class="requirement-item">
-                <h3>${heading}</h3>
+                <h3>${escapeHtml(heading)}</h3>
                 ${formatRequirementValue(value)}
             </div>
         `;
     }
 
-    return html;
+    return html || '<p>No requirements available.</p>';
 }
 
-
 function formatRequirementValue(value) {
-
-    if (value === null || value === undefined) {
-        return `<p>Not specified</p>`;
+    if (value === null || value === undefined || value === '') {
+        return '<p>Not specified</p>';
     }
 
     if (Array.isArray(value)) {
+        if (!value.length) return '<p>None specified</p>';
 
-        if (value.length === 0) {
-            return `<p>None specified</p>`;
-        }
-
-        return `
-            <ul>
-                ${value.map(item => `<li>${item}</li>`).join("")}
-            </ul>
-        `;
+        return `<ul>${value.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
     }
 
-    if (typeof value === "object") {
-
-        return `
-            <div class="nested-requirements">
-                ${formatRequirements(value)}
-            </div>
-        `;
+    if (typeof value === 'object') {
+        return `<div class="nested-requirements">${formatRequirements(value)}</div>`;
     }
 
-    return `<p>${value}</p>`;
+    return `<p>${escapeHtml(value)}</p>`;
 }
-
 
 function closeRequirementsModal() {
-
-    const modal = document.getElementById("requirementsModal");
-
-    modal.style.display = "none";
+    document.getElementById('requirementsModal').style.display = 'none';
 }
+
+document.getElementById('requirementsModal').addEventListener('click', event => {
+    if (event.target.id === 'requirementsModal') {
+        closeRequirementsModal();
+    }
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+        closeRequirementsModal();
+    }
+});
+
+// ---------------- Generate and delete RFPs ----------------
 
 async function generateProposal(rfpId, btn) {
     setButtonLoading(btn, 'Generating…');
     showMsg('uploadMsg', 'Generating proposal… this may take 10–20 seconds.', 'loading');
+
     try {
         const res = await fetch(API.generate, {
             method: 'POST',
@@ -1366,73 +1701,105 @@ async function generateProposal(rfpId, btn) {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': CSRF_TOKEN
             },
-            body: JSON.stringify({ rfp_id: rfpId }),
+            body: JSON.stringify({ rfp_id: rfpId })
         });
+
         const data = await res.json();
+
         if (res.ok) {
             showMsg('uploadMsg', 'Proposal generated. Check the Proposals tab.', 'success');
         } else {
             showMsg('uploadMsg', data.error || 'Proposal generation failed.', 'error');
         }
+    } catch (error) {
+        showMsg('uploadMsg', 'Generation error: ' + error.message, 'error');
     } finally {
-        loadRfps();
+        await loadRfps();
     }
 }
 
 async function deleteRfp(id, btn) {
     if (!confirm('Delete this RFP? This cannot be undone.')) return;
+
     setButtonLoading(btn, 'Deleting…');
+
     try {
         const res = await fetch(API.rfpDetail(id), {
             method: 'DELETE',
             headers: { 'X-CSRFToken': CSRF_TOKEN }
         });
+
         if (res.ok || res.status === 204) {
             showMsg('uploadMsg', 'RFP deleted.', 'success');
         } else {
             showMsg('uploadMsg', 'Delete failed.', 'error');
         }
+    } catch (error) {
+        showMsg('uploadMsg', 'Delete error: ' + error.message, 'error');
     } finally {
-        loadRfps();
+        await loadRfps();
     }
 }
 
 // ---------------- Proposals ----------------
+
 async function loadProposals() {
-    const res = await fetch(API.proposals);
-    const data = await res.json();
-    allProposals = data.results || data;
-    renderProposals();
+    try {
+        const res = await fetch(API.proposals);
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || 'Could not load proposals.');
+        }
+
+        allProposals = data.results || data;
+        renderProposals();
+    } catch (error) {
+        document.getElementById('proposalTableBody').innerHTML =
+            `<tr class="empty-row"><td colspan="7">${escapeHtml(error.message)}</td></tr>`;
+    }
 }
 
 function renderProposals() {
     const searchTerm = document.getElementById('proposalSearch').value.toLowerCase();
     const statusFilter = document.getElementById('proposalStatusFilter').value;
 
-    let filtered = allProposals.filter(p => {
-        const matchesSearch = (p.title || '').toLowerCase().includes(searchTerm);
-        const matchesStatus = !statusFilter || p.status === statusFilter;
+    const filtered = allProposals.filter(proposal => {
+        const matchesSearch = (proposal.title || '').toLowerCase().includes(searchTerm);
+        const matchesStatus = !statusFilter || proposal.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
 
-    const rows = filtered.map(p => `
+    const rows = filtered.map(proposal => `
         <tr>
-            <td>#${p.id}</td>
-            <td>${p.title || '-'}</td>
-            <td>${p.estimated_cost ? '$' + p.estimated_cost : '—'}</td>
-            <td>${p.estimated_timeline_weeks ? p.estimated_timeline_weeks + ' wks' : '—'}</td>
-            <td>${statusBadge(p.status)}</td>
-            <td>${p.generated_pdf ? `<a class="pdf-link" href="${p.generated_pdf}" target="_blank">View PDF</a>` : '—'}</td>
+            <td>#${proposal.id}</td>
+            <td>${escapeHtml(proposal.title || '-')}</td>
+            <td>${proposal.estimated_cost ? '$' + escapeHtml(proposal.estimated_cost) : '—'}</td>
+            <td>${proposal.estimated_timeline_weeks ? escapeHtml(proposal.estimated_timeline_weeks) + ' wks' : '—'}</td>
+            <td>${statusBadge(proposal.status)}</td>
+            <td>${proposal.generated_pdf
+                ? `<a class="pdf-link" href="${escapeHtml(proposal.generated_pdf)}" target="_blank" rel="noopener noreferrer">View PDF</a>`
+                : '—'}</td>
             <td class="actions-cell">
-                ${!p.estimated_cost ? `<button class="action-btn primary" onclick="estimateProposal(${p.id}, this)">Estimate</button>` : ''}
-                ${p.estimated_cost && !p.generated_pdf ? `<button class="action-btn primary" onclick="exportPdf(${p.id}, this)">Export PDF</button>` : ''}
-                ${p.generated_pdf && p.status !== 'sent_for_review' ? `<button class="action-btn" onclick="sendReview(${p.id}, this)">Send for review</button>` : ''}
-                ${p.generated_pdf ? `<button class="action-btn" onclick="sendToClient(${p.id}, this)">Send to client</button>` : ''}
-                <button class="action-btn delete-btn" onclick="deleteProposal(${p.id}, this)">Delete</button>
+                ${!proposal.estimated_cost
+                    ? `<button class="action-btn primary" onclick="estimateProposal(${proposal.id}, this)">Estimate</button>`
+                    : ''}
+                ${proposal.estimated_cost && !proposal.generated_pdf
+                    ? `<button class="action-btn primary" onclick="exportPdf(${proposal.id}, this)">Export PDF</button>`
+                    : ''}
+                ${proposal.generated_pdf && proposal.status !== 'sent_for_review'
+                    ? `<button class="action-btn" onclick="sendReview(${proposal.id}, this)">Send for review</button>`
+                    : ''}
+                ${proposal.generated_pdf
+                    ? `<button class="action-btn" onclick="sendToClient(${proposal.id}, this)">Send to client</button>`
+                    : ''}
+                <button class="action-btn delete-btn" onclick="deleteProposal(${proposal.id}, this)">Delete</button>
             </td>
         </tr>
     `).join('');
-    document.getElementById('proposalTableBody').innerHTML = rows || '<tr class="empty-row"><td colspan="7">No proposals match your search or filter.</td></tr>';
+
+    document.getElementById('proposalTableBody').innerHTML = rows ||
+        '<tr class="empty-row"><td colspan="7">No proposals match your search or filter.</td></tr>';
 }
 
 document.getElementById('proposalSearch').addEventListener('input', renderProposals);
@@ -1440,47 +1807,62 @@ document.getElementById('proposalStatusFilter').addEventListener('change', rende
 
 async function estimateProposal(id, btn) {
     setButtonLoading(btn, 'Estimating…');
+
     try {
         const res = await fetch(API.estimate(id), {
             method: 'POST',
             headers: { 'X-CSRFToken': CSRF_TOKEN }
         });
+
         const data = await res.json();
+
         if (!res.ok) alert(data.error || 'Estimation failed.');
+    } catch (error) {
+        alert('Estimation error: ' + error.message);
     } finally {
-        loadProposals();
+        await loadProposals();
     }
 }
 
 async function exportPdf(id, btn) {
     setButtonLoading(btn, 'Exporting…');
+
     try {
         const res = await fetch(API.exportPdf(id), {
             method: 'POST',
             headers: { 'X-CSRFToken': CSRF_TOKEN }
         });
+
         const data = await res.json();
+
         if (!res.ok) alert(data.error || 'PDF export failed.');
+    } catch (error) {
+        alert('PDF export error: ' + error.message);
     } finally {
-        loadProposals();
+        await loadProposals();
     }
 }
 
 async function sendReview(id, btn) {
     setButtonLoading(btn, 'Sending…');
+
     try {
         const res = await fetch(API.sendReview(id), {
             method: 'POST',
             headers: { 'X-CSRFToken': CSRF_TOKEN }
         });
+
         const data = await res.json();
+
         if (res.ok) {
-            alert(data.message);
+            alert(data.message || 'Proposal sent for review.');
         } else {
             alert(data.error || 'Send failed.');
         }
+    } catch (error) {
+        alert('Send error: ' + error.message);
     } finally {
-        loadProposals();
+        await loadProposals();
     }
 }
 
@@ -1489,6 +1871,7 @@ async function sendToClient(id, btn) {
     if (!clientEmail) return;
 
     setButtonLoading(btn, 'Sending…');
+
     try {
         const res = await fetch(API.sendToClient(id), {
             method: 'POST',
@@ -1496,38 +1879,46 @@ async function sendToClient(id, btn) {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': CSRF_TOKEN
             },
-            body: JSON.stringify({ client_email: clientEmail }),
+            body: JSON.stringify({ client_email: clientEmail })
         });
+
         const data = await res.json();
+
         if (res.ok) {
-            alert(data.message);
+            alert(data.message || 'Proposal sent to client.');
         } else {
             alert(data.error || 'Send failed.');
         }
+    } catch (error) {
+        alert('Send error: ' + error.message);
     } finally {
-        loadProposals();
+        await loadProposals();
     }
 }
 
 async function deleteProposal(id, btn) {
     if (!confirm('Delete this proposal? This cannot be undone.')) return;
+
     setButtonLoading(btn, 'Deleting…');
+
     try {
         const res = await fetch(API.proposalDetail(id), {
             method: 'DELETE',
             headers: { 'X-CSRFToken': CSRF_TOKEN }
         });
+
         if (!(res.ok || res.status === 204)) {
             alert('Delete failed.');
         }
+    } catch (error) {
+        alert('Delete error: ' + error.message);
     } finally {
-        loadProposals();
+        await loadProposals();
     }
 }
 
-// Init
+// Initial data load
 loadRfps();
 </script>
-
 </body>
 </html>

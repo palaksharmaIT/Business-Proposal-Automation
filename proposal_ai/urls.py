@@ -26,6 +26,8 @@ urlpatterns = [
     path('api/proposals/', include('proposals.urls')),
     path('api/exporter/', include('exporter.urls')),
     path('', include('dashboard.urls')),
+    
+
 ]
 
 if settings.DEBUG:

@@ -92,4 +92,6 @@ def search_similar_projects(query_text: str, top_k: int = 3):
             "similarity_score": float(score),
         })
 
+    print("loaded index path:", index_path )
+
     return output

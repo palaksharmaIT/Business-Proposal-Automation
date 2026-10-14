@@ -1,0 +1,1558 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f4ee">
+
+    <title>Proposal Studio — AI Proposal Assistant</title>
+    <meta
+        name="description"
+        content="Turn complex RFPs into clear, professional business proposals with AI Proposal Assistant."
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --paper: #f7f4ee;
+            --paper-light: #fcfaf6;
+            --ink: #262520;
+            --muted: #77736b;
+            --rust: #a84f38;
+            --rust-dark: #873b29;
+            --line: #e5dfd5;
+            --sage: #e7e9df;
+            --white: #fffefa;
+            --serif: "Playfair Display", Georgia, serif;
+            --sans: "DM Sans", Arial, sans-serif;
+            --container: 1160px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 95px;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: var(--sans);
+            font-size: 15px;
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .container {
+            width: min(var(--container), calc(100% - 48px));
+            margin-inline: auto;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--rust);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            width: 24px;
+            height: 1px;
+            background: currentColor;
+            content: "";
+        }
+
+        .serif {
+            font-family: var(--serif);
+            font-weight: 500;
+            letter-spacing: -1.5px;
+        }
+
+        .button {
+            display: inline-flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 0 22px;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background .2s ease, color .2s ease,
+                        border-color .2s ease, transform .2s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button-primary {
+            color: var(--white);
+            background: var(--rust);
+        }
+
+        .button-primary:hover {
+            background: var(--rust-dark);
+        }
+
+        .button-outline {
+            color: var(--ink);
+            background: transparent;
+            border-color: #cfc7ba;
+        }
+
+        .button-outline:hover {
+            border-color: var(--rust);
+            color: var(--rust);
+        }
+
+        .button-arrow {
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        /* Navigation */
+
+        .site-header {
+            position: sticky;
+            z-index: 20;
+            top: 0;
+            background: rgba(247, 244, 238, .94);
+            border-bottom: 1px solid rgba(229, 223, 213, .85);
+            backdrop-filter: blur(14px);
+        }
+
+        .navbar {
+            display: flex;
+            min-height: 78px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            flex-shrink: 0;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 37px;
+            height: 37px;
+            place-items: center;
+            color: var(--white);
+            background: var(--rust);
+            border-radius: 50%;
+            font-family: var(--serif);
+            font-size: 23px;
+            font-style: italic;
+        }
+
+        .brand-name {
+            display: block;
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 600;
+            letter-spacing: -.5px;
+            line-height: 1.15;
+        }
+
+        .brand-caption {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 9px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links > a:not(.button) {
+            color: #615e57;
+            font-size: 12px;
+            transition: color .2s ease;
+        }
+
+        .nav-links > a:not(.button):hover {
+            color: var(--rust);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .login-link {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .nav-cta {
+            min-height: 42px;
+            padding-inline: 17px;
+        }
+
+        .menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            color: var(--ink);
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Hero */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 88px 0 76px;
+        }
+
+        .hero::before {
+            position: absolute;
+            top: 35px;
+            right: -140px;
+            width: 440px;
+            height: 440px;
+            border: 1px solid rgba(168, 79, 56, .10);
+            border-radius: 50%;
+            content: "";
+            pointer-events: none;
+        }
+
+        .hero::after {
+            position: absolute;
+            top: 95px;
+            right: -65px;
+            width: 290px;
+            height: 290px;
+            border: 1px solid rgba(168, 79, 56, .10);
+            border-radius: 50%;
+            content: "";
+            pointer-events: none;
+        }
+
+        .hero-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1.04fr .96fr;
+            align-items: center;
+            gap: 65px;
+        }
+
+        .hero-copy {
+            padding: 12px 0 24px;
+        }
+
+        .hero-label {
+            margin-bottom: 25px;
+        }
+
+        .hero h1 {
+            max-width: 630px;
+            margin: 0;
+            font-family: var(--serif);
+            font-size: clamp(48px, 5.4vw, 73px);
+            font-weight: 500;
+            letter-spacing: -3.4px;
+            line-height: 1.09;
+        }
+
+        .hero h1 em {
+            color: var(--rust);
+            font-weight: 500;
+        }
+
+        .hero-description {
+            max-width: 465px;
+            margin: 25px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .hero-note {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 23px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .note-dot {
+            width: 6px;
+            height: 6px;
+            background: #74826b;
+            border-radius: 50%;
+        }
+
+        /* Decorative proposal preview */
+
+        .hero-visual {
+            position: relative;
+            min-width: 0;
+            padding: 24px 12px 26px 22px;
+        }
+
+        .visual-orbit {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #e7dfd3;
+            border-radius: 48% 48% 4px 4px;
+        }
+
+        .document-card {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 430px);
+            min-height: 460px;
+            margin: 0 auto;
+            padding: 33px 34px;
+            background: var(--white);
+            border: 1px solid #e9e3da;
+            box-shadow: 0 24px 70px rgba(51, 42, 30, .09);
+            transform: rotate(-2deg);
+        }
+
+        .document-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .document-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--serif);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .document-logo-mark {
+            display: grid;
+            width: 24px;
+            height: 24px;
+            place-items: center;
+            color: var(--white);
+            background: var(--rust);
+            border-radius: 50%;
+            font-size: 15px;
+            font-style: italic;
+        }
+
+        .document-status {
+            padding: 5px 8px;
+            color: #607357;
+            background: #edf1e7;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .document-kicker {
+            margin-top: 29px;
+            color: var(--rust);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .document-title {
+            max-width: 300px;
+            margin: 9px 0 0;
+            font-family: var(--serif);
+            font-size: 34px;
+            font-weight: 500;
+            letter-spacing: -1.1px;
+            line-height: 1.18;
+        }
+
+        .document-subtitle {
+            margin-top: 11px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .document-rule {
+            width: 47px;
+            height: 2px;
+            margin: 23px 0;
+            background: var(--rust);
+        }
+
+        .fake-line {
+            height: 5px;
+            margin-top: 10px;
+            background: #e9e5dd;
+            border-radius: 1px;
+        }
+
+        .fake-line.dark {
+            background: #d9d2c7;
+        }
+
+        .fake-line.w-90 { width: 90%; }
+        .fake-line.w-85 { width: 85%; }
+        .fake-line.w-80 { width: 80%; }
+        .fake-line.w-72 { width: 72%; }
+        .fake-line.w-65 { width: 65%; }
+        .fake-line.w-50 { width: 50%; }
+
+        .document-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 25px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+        }
+
+        .document-meta-label {
+            color: #918b80;
+            font-size: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .document-meta-value {
+            margin-top: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .floating-note {
+            position: absolute;
+            z-index: 2;
+            right: -3px;
+            bottom: 64px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 230px;
+            padding: 15px 17px;
+            background: var(--white);
+            border: 1px solid var(--line);
+            box-shadow: 0 14px 40px rgba(51, 42, 30, .08);
+        }
+
+        .floating-icon {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            place-items: center;
+            color: var(--rust);
+            background: #f4e8e0;
+            border-radius: 50%;
+            font-size: 17px;
+        }
+
+        .floating-title {
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .floating-description {
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        /* Trust strip */
+
+        .trust-strip {
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 254, 250, .45);
+        }
+
+        .trust-inner {
+            display: flex;
+            min-height: 90px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .trust-label {
+            max-width: 165px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #5f5b53;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .trust-symbol {
+            display: grid;
+            width: 28px;
+            height: 28px;
+            place-items: center;
+            color: var(--rust);
+            border: 1px solid #ded2c5;
+            border-radius: 50%;
+            font-size: 13px;
+        }
+
+        /* Shared sections */
+
+        .section {
+            padding: 105px 0;
+        }
+
+        .section-heading {
+            max-width: 640px;
+            margin-bottom: 45px;
+        }
+
+        .section-heading h2 {
+            margin: 15px 0 0;
+            font-family: var(--serif);
+            font-size: clamp(36px, 4vw, 51px);
+            font-weight: 500;
+            letter-spacing: -2px;
+            line-height: 1.2;
+        }
+
+        .section-heading p {
+            max-width: 530px;
+            margin: 17px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        /* Features */
+
+        .features {
+            background: var(--paper);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            border-top: 1px solid var(--line);
+            border-left: 1px solid var(--line);
+        }
+
+        .feature-card {
+            min-height: 245px;
+            padding: 27px 23px;
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            transition: background .2s ease;
+        }
+
+        .feature-card:hover {
+            background: var(--paper-light);
+        }
+
+        .feature-number {
+            color: #a8a094;
+            font-family: var(--serif);
+            font-size: 13px;
+        }
+
+        .feature-icon {
+            display: grid;
+            width: 43px;
+            height: 43px;
+            margin-top: 24px;
+            place-items: center;
+            color: var(--rust);
+            background: #f0e8dd;
+            border-radius: 50%;
+            font-size: 18px;
+        }
+
+        .feature-card h3 {
+            margin: 18px 0 8px;
+            font-family: var(--serif);
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -.3px;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        /* How it works */
+
+        .how-section {
+            background: var(--sage);
+        }
+
+        .how-layout {
+            display: grid;
+            grid-template-columns: .82fr 1.18fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .how-intro {
+            position: sticky;
+            top: 120px;
+        }
+
+        .how-intro h2 {
+            margin: 15px 0;
+            font-family: var(--serif);
+            font-size: clamp(38px, 4vw, 51px);
+            font-weight: 500;
+            letter-spacing: -2px;
+            line-height: 1.18;
+        }
+
+        .how-intro p {
+            color: #6f7167;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .how-intro .button {
+            margin-top: 14px;
+        }
+
+        .steps {
+            border-top: 1px solid #d1d5c9;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 48px 1fr;
+            gap: 20px;
+            padding: 26px 0;
+            border-bottom: 1px solid #d1d5c9;
+        }
+
+        .step-number {
+            display: grid;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            color: var(--rust);
+            border: 1px solid #c7cbbf;
+            border-radius: 50%;
+            font-family: var(--serif);
+            font-size: 16px;
+        }
+
+        .step h3 {
+            margin: 2px 0 6px;
+            font-family: var(--serif);
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .step p {
+            max-width: 420px;
+            margin: 0;
+            color: #6f7167;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        /* About / purpose */
+
+        .about-section {
+            padding: 96px 0;
+        }
+
+        .about-panel {
+            display: grid;
+            grid-template-columns: .9fr 1.1fr;
+            align-items: center;
+            gap: 65px;
+            padding: 55px;
+            background: var(--paper-light);
+            border: 1px solid var(--line);
+        }
+
+        .about-art {
+            position: relative;
+            display: grid;
+            min-height: 275px;
+            place-items: center;
+            overflow: hidden;
+            background: #eee7dc;
+        }
+
+        .about-art::before,
+        .about-art::after {
+            position: absolute;
+            width: 210px;
+            height: 210px;
+            border: 1px solid #d5bca9;
+            border-radius: 50%;
+            content: "";
+        }
+
+        .about-art::after {
+            width: 150px;
+            height: 150px;
+        }
+
+        .about-letter {
+            position: relative;
+            z-index: 1;
+            color: var(--rust);
+            font-family: var(--serif);
+            font-size: 115px;
+            font-style: italic;
+            line-height: 1;
+        }
+
+        .about-copy h2 {
+            margin: 13px 0 16px;
+            font-family: var(--serif);
+            font-size: clamp(34px, 3.5vw, 45px);
+            font-weight: 500;
+            letter-spacing: -1.7px;
+            line-height: 1.2;
+        }
+
+        .about-copy p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.95;
+        }
+
+        .about-points {
+            display: grid;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .about-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .check {
+            color: var(--rust);
+            font-weight: 700;
+        }
+
+        /* CTA */
+
+        .cta-section {
+            padding: 0 0 100px;
+        }
+
+        .cta-panel {
+            position: relative;
+            overflow: hidden;
+            padding: 65px 30px;
+            text-align: center;
+            color: var(--white);
+            background: #302e28;
+        }
+
+        .cta-panel::before,
+        .cta-panel::after {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 50%;
+            content: "";
+            pointer-events: none;
+        }
+
+        .cta-panel::before {
+            top: -160px;
+            left: -65px;
+        }
+
+        .cta-panel::after {
+            right: -95px;
+            bottom: -190px;
+            width: 350px;
+            height: 350px;
+        }
+
+        .cta-panel .eyebrow {
+            color: #d6a08d;
+        }
+
+        .cta-panel h2 {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+            margin: 16px auto 0;
+            font-family: var(--serif);
+            font-size: clamp(38px, 4.5vw, 56px);
+            font-weight: 500;
+            letter-spacing: -2px;
+            line-height: 1.18;
+        }
+
+        .cta-panel p {
+            position: relative;
+            z-index: 1;
+            max-width: 490px;
+            margin: 17px auto 0;
+            color: #c3beb3;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .cta-panel .button {
+            position: relative;
+            z-index: 1;
+            margin-top: 28px;
+        }
+
+        /* Footer */
+
+        .site-footer {
+            border-top: 1px solid var(--line);
+        }
+
+        .footer-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+            padding: 30px 0;
+        }
+
+        .footer-copy {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .footer-links a:hover {
+            color: var(--rust);
+        }
+
+        /* Responsive */
+
+        @media (max-width: 1000px) {
+            .hero-grid {
+                gap: 35px;
+            }
+
+            .hero h1 {
+                font-size: clamp(46px, 6vw, 64px);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .how-layout {
+                gap: 45px;
+            }
+
+            .about-panel {
+                gap: 35px;
+                padding: 35px;
+            }
+
+            .trust-inner {
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 22px 0;
+            }
+
+            .trust-label {
+                max-width: none;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .container {
+                width: min(100% - 36px, var(--container));
+            }
+
+            .navbar {
+                min-height: 70px;
+            }
+
+            .menu-toggle {
+                display: grid;
+                place-items: center;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: calc(100% + 1px);
+                right: 0;
+                left: 0;
+                display: none;
+                align-items: stretch;
+                gap: 0;
+                padding: 12px 18px 18px;
+                background: var(--paper);
+                border-bottom: 1px solid var(--line);
+            }
+
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .nav-links > a:not(.button) {
+                padding: 12px 3px;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .nav-actions {
+                justify-content: space-between;
+                gap: 18px;
+                padding-top: 14px;
+            }
+
+            .nav-cta {
+                min-height: 39px;
+            }
+
+            .hero {
+                padding: 62px 0 52px;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .hero-copy {
+                padding: 0;
+            }
+
+            .hero h1 {
+                max-width: 560px;
+                font-size: clamp(46px, 10vw, 64px);
+                letter-spacing: -2.5px;
+            }
+
+            .hero-description {
+                font-size: 14px;
+            }
+
+            .hero-visual {
+                width: min(100%, 480px);
+                margin-inline: auto;
+                padding: 20px 8px 25px;
+            }
+
+            .document-card {
+                min-height: 420px;
+                padding: 28px;
+            }
+
+            .document-title {
+                font-size: 31px;
+            }
+
+            .floating-note {
+                right: -3px;
+                bottom: 42px;
+            }
+
+            .trust-inner {
+                justify-content: flex-start;
+                gap: 18px 25px;
+            }
+
+            .trust-label {
+                text-align: left;
+            }
+
+            .section {
+                padding: 72px 0;
+            }
+
+            .section-heading {
+                margin-bottom: 30px;
+            }
+
+            .how-layout {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .how-intro {
+                position: static;
+            }
+
+            .about-section {
+                padding: 72px 0;
+            }
+
+            .about-panel {
+                grid-template-columns: 1fr;
+                gap: 28px;
+                padding: 22px;
+            }
+
+            .about-art {
+                min-height: 210px;
+            }
+
+            .cta-section {
+                padding-bottom: 65px;
+            }
+
+            .cta-panel {
+                padding: 53px 23px;
+            }
+
+            .footer-main {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .brand-name {
+                font-size: 17px;
+            }
+
+            .brand-caption {
+                font-size: 8px;
+            }
+
+            .nav-cta {
+                padding-inline: 12px;
+                font-size: 11px;
+            }
+
+            .login-link {
+                font-size: 11px;
+            }
+
+            .hero h1 {
+                font-size: 45px;
+            }
+
+            .hero-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .hero-actions .button {
+                width: 100%;
+            }
+
+            .document-card {
+                min-height: 390px;
+                padding: 23px;
+            }
+
+            .document-title {
+                font-size: 28px;
+            }
+
+            .floating-note {
+                right: -5px;
+                bottom: 28px;
+                max-width: 195px;
+                padding: 11px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card {
+                min-height: auto;
+                padding: 23px;
+            }
+
+            .feature-icon {
+                margin-top: 15px;
+            }
+
+            .trust-item {
+                font-size: 10px;
+            }
+
+            .step {
+                grid-template-columns: 42px 1fr;
+                gap: 12px;
+            }
+
+            .footer-links {
+                gap: 14px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <header class="site-header">
+        <div class="container navbar">
+            <a class="brand" href="{% url 'home' %}" aria-label="Proposal Studio home">
+                <span class="brand-mark">P</span>
+                <span>
+                    <span class="brand-name">Proposal Studio</span>
+                    <span class="brand-caption">AI Proposal Assistant</span>
+                </span>
+            </a>
+
+            <button
+                class="menu-toggle"
+                id="menuToggle"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="navLinks"
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.7"
+                     stroke-linecap="round">
+                    <path d="M4 7h16M4 12h16M4 17h16"></path>
+                </svg>
+            </button>
+
+            <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it works</a>
+                <a href="#about">About</a>
+
+                <div class="nav-actions">
+                    <a class="login-link" href="{% url 'login' %}">Log in</a>
+                    <a class="button button-primary nav-cta" href="{% url 'register' %}">
+                        Get Started <span class="button-arrow">↗</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-copy">
+                    <div class="eyebrow hero-label">A smarter way to propose</div>
+
+                    <h1>
+                        Better proposals.<br>
+                        Built with <em>intelligence.</em>
+                    </h1>
+
+                    <p class="hero-description">
+                        Turn complex requirements into clear, professional
+                        business proposals. Spend less time starting from
+                        scratch and more time winning the right work.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="{% url 'register' %}">
+                            Create your first proposal
+                            <span class="button-arrow">↗</span>
+                        </a>
+                        <a class="button button-outline" href="#how-it-works">
+                            See how it works
+                        </a>
+                    </div>
+
+                    <div class="hero-note">
+                        <span class="note-dot"></span>
+                        A more thoughtful workflow for proposal creation
+                    </div>
+                </div>
+
+                <div class="hero-visual" aria-label="Illustration of a professionally prepared business proposal">
+                    <div class="visual-orbit"></div>
+
+                    <div class="document-card">
+                        <div class="document-topline">
+                            <div class="document-logo">
+                                <span class="document-logo-mark">P</span>
+                                <span>Proposal Studio</span>
+                            </div>
+                            <span class="document-status">Ready to review</span>
+                        </div>
+
+                        <div class="document-kicker">Business proposal · 2026</div>
+                        <h2 class="document-title">
+                            A considered approach to your next big idea.
+                        </h2>
+                        <div class="document-subtitle">
+                            Prepared for your next opportunity
+                        </div>
+
+                        <div class="document-rule"></div>
+
+                        <div class="fake-line dark w-90"></div>
+                        <div class="fake-line w-85"></div>
+                        <div class="fake-line w-80"></div>
+                        <div class="fake-line w-65"></div>
+
+                        <div style="margin-top: 22px;">
+                            <div class="fake-line dark w-50"></div>
+                            <div class="fake-line w-90"></div>
+                            <div class="fake-line w-72"></div>
+                        </div>
+
+                        <div class="document-bottom">
+                            <div>
+                                <div class="document-meta-label">Approach</div>
+                                <div class="document-meta-value">Tailored strategy</div>
+                            </div>
+                            <div>
+                                <div class="document-meta-label">Deliverable</div>
+                                <div class="document-meta-value">Proposal document</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floating-note">
+                        <div class="floating-icon">✳</div>
+                        <div>
+                            <div class="floating-title">From requirements to proposal</div>
+                            <div class="floating-description">A clearer path from brief to draft</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefits strip -->
+        <section class="trust-strip" aria-label="Product benefits">
+            <div class="container trust-inner">
+                <div class="trust-label">
+                    Designed to make proposal work feel more manageable.
+                </div>
+
+                <div class="trust-item">
+                    <span class="trust-symbol">✳</span>
+                    AI-assisted drafting
+                </div>
+
+                <div class="trust-item">
+                    <span class="trust-symbol">⌕</span>
+                    Clearer requirements
+                </div>
+
+                <div class="trust-item">
+                    <span class="trust-symbol">↗</span>
+                    Professional output
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section features" id="features">
+            <div class="container">
+                <div class="section-heading">
+                    <div class="eyebrow">What makes it different</div>
+                    <h2 class="serif">
+                        The busywork gets lighter.<br>
+                        The thinking stays yours.
+                    </h2>
+                    <p>
+                        A focused workspace to help you understand what is
+                        being asked, shape your response and prepare a
+                        proposal that is ready for your review.
+                    </p>
+                </div>
+
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <div class="feature-number">01 / Draft</div>
+                        <div class="feature-icon">✳</div>
+                        <h3>AI-assisted proposals</h3>
+                        <p>
+                            Create a structured first draft with AI support,
+                            then refine the language and details to fit your
+                            business and your client.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-number">02 / Understand</div>
+                        <div class="feature-icon">⌕</div>
+                        <h3>Requirement clarity</h3>
+                        <p>
+                            Break down complex requests into more manageable
+                            requirements so key details are easier to review.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-number">03 / Refine</div>
+                        <div class="feature-icon">✎</div>
+                        <h3>Review with confidence</h3>
+                        <p>
+                            Keep your team in the loop and make thoughtful
+                            revisions before a proposal is shared externally.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-number">04 / Deliver</div>
+                        <div class="feature-icon">↗</div>
+                        <h3>Professional documents</h3>
+                        <p>
+                            Prepare polished proposal documents that are
+                            easier to present, share and take into the next
+                            conversation.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section class="section how-section" id="how-it-works">
+            <div class="container how-layout">
+                <div class="how-intro">
+                    <div class="eyebrow">A simpler process</div>
+                    <h2>From first brief to final review.</h2>
+                    <p>
+                        Spend less time organizing a blank page. Use a
+                        guided workflow to move from understanding the work
+                        to preparing a proposal for review.
+                    </p>
+                    <a class="button button-primary" href="{% url 'register' %}">
+                        Get Started <span class="button-arrow">↗</span>
+                    </a>
+                </div>
+
+                <div class="steps">
+                    <article class="step">
+                        <div class="step-number">01</div>
+                        <div>
+                            <h3>Start with the opportunity</h3>
+                            <p>
+                                Bring your project brief or request into your
+                                workflow and identify what the client needs.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="step">
+                        <div class="step-number">02</div>
+                        <div>
+                            <h3>Build a structured draft</h3>
+                            <p>
+                                Use AI-assisted drafting to organize the
+                                response into a more useful proposal structure.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="step">
+                        <div class="step-number">03</div>
+                        <div>
+                            <h3>Review, refine and prepare</h3>
+                            <p>
+                                Check the details, make the proposal your own
+                                and prepare the final document for the next step.
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- About -->
+        <section class="about-section" id="about">
+            <div class="container">
+                <div class="about-panel">
+                    <div class="about-art" aria-hidden="true">
+                        <span class="about-letter">P</span>
+                    </div>
+
+                    <div class="about-copy">
+                        <div class="eyebrow">The idea behind the tool</div>
+                        <h2>Good proposals begin with clear thinking.</h2>
+                        <p>
+                            Proposal Studio is designed to help make proposal
+                            preparation more organized and less repetitive.
+                            It brings AI assistance into the drafting process
+                            while keeping people in control of the final response.
+                        </p>
+
+                        <div class="about-points">
+                            <div class="about-point">
+                                <span class="check">✓</span>
+                                <span>Keep the proposal focused on the actual requirements.</span>
+                            </div>
+                            <div class="about-point">
+                                <span class="check">✓</span>
+                                <span>Use AI to assist your workflow, not replace your judgment.</span>
+                            </div>
+                            <div class="about-point">
+                                <span class="check">✓</span>
+                                <span>Review the details before sharing work with a client.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-panel">
+                    <div class="eyebrow">Your next proposal starts here</div>
+                    <h2>Make room for better work.</h2>
+                    <p>
+                        Start building a more considered proposal workflow
+                        with AI assistance and a workspace designed around
+                        the way you work.
+                    </p>
+                    <a class="button button-primary" href="{% url 'register' %}">
+                        Get Started <span class="button-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-main">
+            <a class="brand" href="{% url 'home' %}">
+                <span class="brand-mark">P</span>
+                <span>
+                    <span class="brand-name">Proposal Studio</span>
+                    <span class="brand-caption">AI Proposal Assistant</span>
+                </span>
+            </a>
+
+            <div class="footer-copy">
+                © {% now "Y" %} Proposal Studio. All rights reserved.
+            </div>
+
+            <nav class="footer-links" aria-label="Footer navigation">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it works</a>
+                <a href="{% url 'login' %}">Log in</a>
+                <a href="{% url 'register' %}">Create account</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        (() => {
+            const menuToggle = document.getElementById("menuToggle");
+            const navLinks = document.getElementById("navLinks");
+
+            if (!menuToggle || !navLinks) return;
+
+            menuToggle.addEventListener("click", () => {
+                const isOpen = navLinks.classList.toggle("open");
+                menuToggle.setAttribute("aria-expanded", String(isOpen));
+                menuToggle.setAttribute(
+                    "aria-label",
+                    isOpen ? "Close navigation menu" : "Open navigation menu"
+                );
+            });
+
+            navLinks.querySelectorAll("a").forEach((link) => {
+                link.addEventListener("click", () => {
+                    navLinks.classList.remove("open");
+                    menuToggle.setAttribute("aria-expanded", "false");
+                    menuToggle.setAttribute("aria-label", "Open navigation menu");
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

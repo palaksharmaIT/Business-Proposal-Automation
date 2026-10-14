@@ -1,8 +1,15 @@
 from django.urls import path
-from .views import dashboard_home , login_view, logout_view
+from . import views
 
 urlpatterns = [
-    path('', dashboard_home, name='dashboard-home'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
+    # Public homepage
+    path("", views.public_home, name="home"),
+
+    # Authentication
+    path("login/", views.login_view, name="login"),
+    path("register/", views.register_view, name="register"),
+    path("logout/", views.logout_view, name="logout"),
+
+    # Existing dashboard — keep unchanged
+    path("dashboard/", views.dashboard_home, name="dashboard-home"),
 ]
