@@ -1,3 +1,6 @@
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,7 +12,7 @@ from .services.estimator import estimate_cost_and_timeline
 from rfp.models import RFP
 from knowledge_base.models import HistoricalProject
 from exporter.models import ProposalDelivery
-from exporter.services.pdf_generator import generate_proposal_pdf
+from exporter.services.pdf_generator import generate_proposal_pdf, build_proposal_pdf_bytes
 from exporter.services.email_service import send_proposal_for_review
 
 
@@ -125,7 +128,7 @@ def export_proposal_pdf(request, pk):
     return Response(
         {
             "message": "PDF generated successfully.",
-            "pdf_url": proposal.generated_pdf.url,
+            "pdf_url": f"/api/proposals/proposals/{proposal.pk}/download-pdf/",
             "proposal": ProposalSerializer(proposal).data,
         },
         status=status.HTTP_200_OK,
@@ -225,3 +228,15 @@ def send_proposal_to_client_view(request, pk):
     )
 
 
+@login_required(login_url='/login/')
+def download_proposal_pdf(request, pk):
+    """
+    GET /api/proposals/proposals/{id}/download-pdf/
+    Builds the proposal PDF in memory and returns it directly,
+    so it does not depend on saved files or /media/ being served.
+    """
+    proposal = get_object_or_404(Proposal, pk=pk)
+    pdf_bytes = build_proposal_pdf_bytes(proposal)
+    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="proposal_{proposal.pk}.pdf"'
+    return response

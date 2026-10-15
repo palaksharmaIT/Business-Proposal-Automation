@@ -17,10 +17,10 @@ from reportlab.platypus import (
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 
 
-def generate_proposal_pdf(proposal):
+def build_proposal_pdf_bytes(proposal):
     """
     Builds a professional PDF for the proposal using ReportLab
-    and saves it to proposal.generated_pdf.
+    and returns it as bytes. Nothing is saved to disk.
     """
 
     buffer = io.BytesIO()
@@ -572,7 +572,7 @@ def generate_proposal_pdf(proposal):
     )
 
     # =========================================================
-    # BUILD PDF
+    # BUILD PDF (returned as bytes, nothing saved here)
     # =========================================================
 
     doc.build(elements)
@@ -581,9 +581,16 @@ def generate_proposal_pdf(proposal):
 
     buffer.close()
 
-    # =========================================================
-    # SAVE PDF
-    # =========================================================
+    return pdf_bytes
+
+
+def generate_proposal_pdf(proposal):
+    """
+    Builds the PDF and also saves it to proposal.generated_pdf
+    (used by the Export PDF button).
+    """
+
+    pdf_bytes = build_proposal_pdf_bytes(proposal)
 
     filename = (
         f"proposal_{proposal.id}_"
@@ -596,4 +603,4 @@ def generate_proposal_pdf(proposal):
         save=True
     )
 
-    return proposal.generated_pdf.path
+    return pdf_bytes
