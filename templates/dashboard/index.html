@@ -1778,7 +1778,7 @@ function renderProposals() {
             <td>${proposal.estimated_timeline_weeks ? escapeHtml(proposal.estimated_timeline_weeks) + ' wks' : '—'}</td>
             <td>${statusBadge(proposal.status)}</td>
             <td>${proposal.generated_pdf
-                ? `<a class="pdf-link" href="${escapeHtml(proposal.generated_pdf)}" target="_blank" rel="noopener noreferrer">View PDF</a>`
+                ? `<a class="pdf-link" href="/api/proposals/proposals/${proposal.id}/download-pdf/" target="_blank" rel="noopener noreferrer">View PDF</a>`
                 : '—'}</td>
             <td class="actions-cell">
                 ${!proposal.estimated_cost
